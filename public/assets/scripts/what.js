@@ -9,7 +9,7 @@
       if (!inFrame && !navigator.userAgent.includes("Firefox")) {
         const popup = open("about:blank", "_blank");
         if (!popup || popup.closed) {
-          alert("To hide from goguardian and other blockers, allow popups and reload. By pressing ok, you agree to our TOS and Privacy Policy.");
+          alert("To hide from filters, allow popups and reload. By pressing ok, you agree to our TOS and Privacy Policy.");
         } else {
           const doc = popup.document;
           const iframe = doc.createElement("iframe");

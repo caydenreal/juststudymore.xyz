@@ -1,161 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>YouTube Clone</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #181818;
-            color: white;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        #searchBar {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: none;
-        }
-
-        #videoGrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-        }
-
-        .videoCard {
-            background: #202020;
-            padding: 10px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .videoCard:hover {
-            transform: scale(1.03);
-        }
-
-        .thumb {
-            width: 100%;
-            border-radius: 10px;
-        }
-
-        .title {
-            margin: 8px 0 4px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .channel,
-        .stats {
-            font-size: 12px;
-            color: #aaa;
-        }
-
-        #pagination {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            background: red;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            background: gray;
-            cursor: not-allowed;
-        }
-
-        #playerModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000;
-            color: white;
-            overflow-y: auto;
-            z-index: 999;
-            padding: 20px;
-        }
-
-        #closeBtn {
-            position: fixed;
-            top: 20px;
-            right: 30px;
-            font-size: 28px;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-
-        #playerBox iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-            border-radius: 10px;
-        }
-
-        #videoInfo {
-            margin-top: 15px;
-        }
-
-        .comment {
-            background: #202020;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>JRDNTube</title>
+<link rel="stylesheet" href="/assets/css/main.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/assets/images/jmw.png" type="image/png" />
+<style>
+  body {
+    font-family: "Inter", Arial, sans-serif;
+    background: var(--bgcolor);
+    color: var(--txtcolor);
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+  #searchBar {
+    width: 50vw;
+    padding: 12px 15px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--txtcolor);
+    outline: none;
+    transition: 0.3s;
+  }
+  #searchBar:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--glow);
+    background: var(--surface-hover);
+  }
+  #videoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .videoCard {
+    background: var(--surface);
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border);
+  }
+  .videoCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px var(--glow);
+  }
+  .thumb {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .title {
+    margin: 8px 0 4px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--primary);
+  }
+  .channel, .stats {
+    font-size: 12px;
+    color: var(--txtcolor);
+  }
+  #pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary);
+    color: var(--bgcolor);
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 5px var(--glow);
+  }
+  button:hover:not(:disabled) {
+    background: var(--secondary);
+    box-shadow: 0 0 12px var(--glow);
+  }
+  button:disabled {
+    background: gray;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  #playerModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 30, 46, 0.95);
+    color: var(--txtcolor);
+    z-index: 99999999;
+    padding: 40px 20px;
+    overflow-y: auto;
+    backdrop-filter: blur(6px);
+  }
+  #closeBtn {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    color: var(--secondary);
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  #closeBtn:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+  }
+  #playerBox iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0 20px var(--glow);
+  }
+  #videoInfo {
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 15px;
+  }
+  #videoInfo h2 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 20px;
+  }
+  #videoInfo p {
+    margin: 5px 0;
+    color: var(--txtcolor);
+  }
+</style>
 </head>
 
-<body>
-    <h1>YouTube Clone</h1>
-    <input id="searchBar" type="text" placeholder="Search videos...">
-    <div id="videoGrid"></div>
-    <div id="pagination">
-        <button id="prevBtn" disabled>Prev</button>
-        <button id="nextBtn" disabled>Next</button>
-    </div>
-    <div id="playerModal">
-        <button id="closeBtn">&times;</button>
-        <div id="playerBox"></div>
-        <div id="videoInfo"></div>
-        <h3>Comments</h3>
-        <div id="comments"></div>
-    </div>
-    <script>
-        let nextPageToken = null; let prevPageToken = null; let lastQuery = "memes";
-        const workerHosts = ["https://sweet-sunset-2733.brawlstarrer6.workers.dev", "https://ytcdn.calculra.store", "https://ytcdn.tutoringservices.site"];
-        function pickWorker() { return workerHosts[Math.floor(Math.random() * workerHosts.length)]; }
-        function apiUrl(path, params) { const q = new URLSearchParams(params).toString(); return `${pickWorker()}/youtube?path=${path}&${q}`; }
-        async function fetchJSON(url) { const res = await fetch(url); if (!res.ok) throw new Error("API error"); return res.json(); }
-        async function fetchVideos(query, pageToken = "") { lastQuery = query; try { const data = await fetchJSON(apiUrl("search", { part: "snippet", q: query, type: "video", maxResults: 12, pageToken })); nextPageToken = data.nextPageToken || null; prevPageToken = data.prevPageToken || null; const ids = data.items.map(v => v.id.videoId).filter(Boolean).join(","); if (!ids) { document.getElementById("videoGrid").innerHTML = "<p>No videos found.</p>"; return; } const statsData = await fetchJSON(apiUrl("videos", { part: "statistics", id: ids })); const statsMap = {}; statsData.items.forEach(stat => statsMap[stat.id] = stat.statistics); displayVideos(data.items, statsMap); document.getElementById("nextBtn").disabled = !nextPageToken; document.getElementById("prevBtn").disabled = !prevPageToken; } catch (err) { console.error(err); } }
-        function displayVideos(videos, statsMap) { const grid = document.getElementById("videoGrid"); grid.innerHTML = ""; videos.forEach(video => { const vid = video.id.videoId; if (!vid) return; const stats = statsMap[vid] || {}; const views = stats.viewCount ? Number(stats.viewCount).toLocaleString() : "N/A"; const likes = stats.likeCount ? Number(stats.likeCount).toLocaleString() : "N/A"; const card = document.createElement("div"); card.className = "videoCard"; card.innerHTML = `<img class="thumb" src="${video.snippet.thumbnails.medium.url}"><div class="title">${video.snippet.title}</div><div class="channel">${video.snippet.channelTitle}</div><div class="stats">${views} views • ${likes} likes</div>`; card.addEventListener("click", () => openPlayer(vid, video.snippet, stats)); grid.appendChild(card); }); }
-        async function openPlayer(videoId, snippet, stats) { document.getElementById("playerModal").style.display = "block"; document.getElementById("playerBox").innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1" allowfullscreen></iframe>`; const likes = +stats.likeCount || 0; const dislikes = +stats.dislikeCount || 0; const ratio = dislikes ? Math.round(likes / (likes + dislikes) * 100) : "N/A"; document.getElementById("videoInfo").innerHTML = `<h2>${snippet.title}</h2><p>${snippet.channelTitle}</p><p>${(stats.viewCount || 0).toLocaleString()} views</p><p>👍 ${likes.toLocaleString()} • 👎 ${dislikes.toLocaleString()} (${ratio}% likes)</p>`; document.getElementById("comments").innerHTML = ""; await loadAllComments(videoId); }
-        async function loadAllComments(videoId, pageToken = "") { const data = await fetchJSON(apiUrl("commentThreads", { part: "snippet", videoId, maxResults: 50, pageToken })); const container = document.getElementById("comments"); data.items.forEach(c => { const t = c.snippet.topLevelComment.snippet; const div = document.createElement("div"); div.className = "comment"; div.innerHTML = `<b>${t.authorDisplayName}</b><br>${t.textDisplay}`; container.appendChild(div); }); if (data.nextPageToken) await loadAllComments(videoId, data.nextPageToken); }
-        document.getElementById("closeBtn").addEventListener("click", () => { document.getElementById("playerModal").style.display = "none"; document.getElementById("playerBox").innerHTML = ""; document.getElementById("videoInfo").innerHTML = ""; document.getElementById("comments").innerHTML = ""; });
-        document.getElementById("searchBar").addEventListener("keypress", e => { if (e.key === "Enter") fetchVideos(e.target.value); });
-        document.getElementById("nextBtn").addEventListener("click", () => { if (nextPageToken) fetchVideos(lastQuery, nextPageToken); });
-        document.getElementById("prevBtn").addEventListener("click", () => { if (prevPageToken) fetchVideos(lastQuery, prevPageToken); });
-        fetchVideos(lastQuery);
-    </script>
-</body>
+<body theme="classic">
+<center>
+  <input id="searchBar" type="text" placeholder="Search videos..." />
+</center>
+<div id="videoGrid"></div>
+<div id="pagination">
+  <button id="prevBtn" disabled>Prev</button>
+  <button id="nextBtn" disabled>Next</button>
+</div>
+<div id="playerModal">
+  <button id="closeBtn">&times;</button>
+  <div id="playerBox"></div>
+  <div id="videoInfo"></div>
+</div>
 
+<script>
+let nextPageToken = null,
+    prevPageToken = null,
+    lastQuery = "games";
+
+const workerHosts = [
+  "https://sweet-sunset-2733.brawlstarrer6.workers.dev",
+  "https://ytcdn.calculra.store",
+  "https://ytcdn.tutoringservices.site",
+];
+
+function pickWorker() {
+  return workerHosts[Math.floor(Math.random() * workerHosts.length)];
+}
+
+function apiUrl(path, params) {
+  const q = new URLSearchParams(params).toString();
+  return `${pickWorker()}/youtube?path=${path}&${q}`;
+}
+
+async function fetchJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("API error");
+  return res.json();
+}
+
+async function fetchVideos(query, pageToken = "") {
+  lastQuery = query;
+  try {
+    const data = await fetchJSON(apiUrl("search", {
+      part: "snippet",
+      q: query,
+      type: "video",
+      maxResults: 50,
+      pageToken,
+    }));
+    nextPageToken = data.nextPageToken || null;
+    prevPageToken = data.prevPageToken || null;
+
+    const ids = data.items.map(v => v.id.videoId).filter(Boolean).join(",");
+    if (!ids) {
+      document.getElementById("videoGrid").innerHTML = "<p>No videos found.</p>";
+      return;
+    }
+
+    const statsData = await fetchJSON(apiUrl("videos", { part: "statistics", id: ids }));
+    const statsMap = {};
+    statsData.items.forEach(stat => statsMap[stat.id] = stat.statistics);
+
+    displayVideos(data.items, statsMap);
+
+    document.getElementById("nextBtn").disabled = !nextPageToken;
+    document.getElementById("prevBtn").disabled = !prevPageToken;
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function displayVideos(videos, statsMap) {
+  const grid = document.getElementById("videoGrid");
+  grid.innerHTML = "";
+  videos.forEach(video => {
+    const vid = video.id.videoId;
+    if (!vid) return;
+    const stats = statsMap[vid] || {};
+    const views = stats.viewCount ? Number(stats.viewCount).toLocaleString() : "N/A";
+
+    const card = document.createElement("div");
+    card.className = "videoCard";
+    card.innerHTML = `
+      <img class="thumb" src="${video.snippet.thumbnails.medium.url}">
+      <div class="title">${video.snippet.title}</div>
+      <div class="channel">${video.snippet.channelTitle}</div>
+      <div class="stats">${views} views</div>
+    `;
+    card.addEventListener("click", () => openPlayer(vid, video.snippet, stats));
+    grid.appendChild(card);
+  });
+}
+
+async function openPlayer(videoId, snippet, stats) {
+  document.body.style.overflow = "hidden";
+  document.getElementById("playerModal").style.display = "block";
+  document.getElementById("playerBox").innerHTML = `
+    <iframe src="https://www.youtube-nocookie.com/embed/${videoId}?playlist=${videoId}&autoplay=1&iv_load_policy=3&loop=1&start=" allowfullscreen></iframe>
+  `;
+  document.getElementById("videoInfo").innerHTML = `
+    <h2>${snippet.title}</h2>
+    <p>${snippet.channelTitle}</p>
+    <p>${(stats.viewCount || 0).toLocaleString()} views</p>
+  `;
+}
+
+document.getElementById("closeBtn").addEventListener("click", () => {
+  document.body.style.overflow = "auto";
+  document.getElementById("playerModal").style.display = "none";
+  document.getElementById("playerBox").innerHTML = "";
+  document.getElementById("videoInfo").innerHTML = "";
+});
+
+document.getElementById("searchBar").addEventListener("keypress", e => {
+  if (e.key === "Enter") fetchVideos(e.target.value);
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+  if (nextPageToken) fetchVideos(lastQuery, nextPageToken);
+});
+
+document.getElementById("prevBtn").addEventListener("click", () => {
+  if (prevPageToken) fetchVideos(lastQuery, prevPageToken);
+});
+
+fetchVideos(lastQuery);
+</script>
+</body>
 </html>

@@ -329,7 +329,7 @@
         setProxy(localStorage.getItem("pr0xy") || "scram")
         let search =
             localStorage.getItem("search-engine") ||
-            "https://search.brave.com/search?q=%s"
+            "https://duckduckgo.com/?q=%s"
 
         const form = document.getElementById("form")
         const input = document.getElementById("address")
@@ -496,7 +496,7 @@
 
     const searchEngine =
         localStorage.getItem("search-engine") ||
-        "https://search.brave.com/search?q=%s"
+        "https://duckduckgo.com/?q=%s"
 
     async function autofill(url) {
         const urlToLoad = makeURL(url, searchEngine)
