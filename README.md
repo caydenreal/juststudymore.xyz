@@ -6,7 +6,7 @@
 
 <h1 align="center"><strong>Jordan's Math Work V7</strong></h1>
 <p align="center">Tee next generation of unblocked games</p>
-<h1 align="center"><a align="center" href="//jordansmath.work">Live demo</a></h1>
+<h1 align="center"><a align="center" href="//jmw.calculra.store">Live demo</a></h1>
 
 ### Features:
 - 450+ games
