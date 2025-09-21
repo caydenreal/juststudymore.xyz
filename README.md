@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center"><strong>Jordan's Math Work V7</strong></h1>
-<p align="center">Tee next generation of unblocked games</p>
+<p align="center">The next generation of unblocked games</p>
 <h1 align="center"><a align="center" href="//jmw.calculra.store">Live demo</a></h1>
 
 ### Features:
@@ -31,7 +31,7 @@
 > to deploy on replit remix the project given
 <a target="_blank" href="https://vercel.com/new/clone?repository-url=https://github.com/JustJxrdanWasDefinetlyTaken/jmw-deployable"><img alt="Deploy to Vercel" src="https://binbashbanana.github.io/deploy-buttons/buttons/remade/vercel.svg"></a>
 <a target="_blank" href="https://render.com/deploy?repo=https://github.com/JustJxrdanWasDefinetlyTaken/jmw-deployable"><img alt="Deploy to Render" src="https://binbashbanana.github.io/deploy-buttons/buttons/remade/render.svg"></a>
-[![Deploy On Replit](https://shields.io/badge/Deploy%20on-replit-important?logo=replit&style=for-the-badge)](https://replit.com/@galacticmainten/jmw-deployable?v=1)
+[![Deploy On Replit](https://shields.io/badge/Deploy%20on-replit-important?logo=replit&style=for-the-badge)](https://replit.com/@galacticmainten/jmw-deploy?v=1)
 - can also be deployed to any node.js service as long as you have this repository url: https://github.com/JustJxrdanWasDefinetlyTaken/jmw-node
 # Credits
 - <a href="//github.com/slqntdevss">Slqnt - themes function and ports</a>
