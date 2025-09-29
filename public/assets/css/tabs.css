@@ -188,7 +188,7 @@ section {
 
 #customAlert[style*="display: block"]~.mainContainer {
   display: none;
-  background:black;
+  background: black;
 }
 
 #customAlert {
@@ -199,7 +199,8 @@ section {
   position: absolute;
   min-width: 160px;
   max-width: 90vw;
-  background: var(--surface);
+  background: var(--bgcolor);
+  border: 0.5px solid var(--border);
   color: var(--txtcolor);
   border-radius: 10px;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
@@ -242,34 +243,133 @@ section {
 }
 
 #debugOverlay {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        background: rgba(30, 30, 46, 0.95);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px;
-        color: var(--txtcolor);
-        font-family: "Inter", sans-serif;
-        font-size: 12px;
-        z-index: 99999999999999;
-        min-width: 200px;
-      }
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: rgba(30, 30, 46, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  color: var(--txtcolor);
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  z-index: 99999999999999;
+  min-width: 200px;
+}
 
-      #debugText {
-        margin-bottom: 8px;
-        line-height: 1.4;
-      }
+#debugText {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
 
-      #fpsGraph {
-        border-radius: 4px;
-        background: rgba(137, 180, 250, 0.1);
-      }
+#fpsGraph {
+  border-radius: 4px;
+  background: rgba(137, 180, 250, 0.1);
+}
 
-      #minBtn {
-        margin-top: 8px;
-        padding: 6px 12px;
-        font-size: 10px;
-        min-width: auto;
-      }
+#minBtn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 10px;
+  min-width: auto;
+}
+
+#history-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.789);
+  border: 1px solid var(--border);
+  width: 60vw;
+  height: 70vh;
+  overflow-y: auto;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  font-family: 'Inter', sans-serif;
+  border-radius: 12px;
+  overflow-x: hidden;
+}
+
+#history-container input {
+  width: 100px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+#history-search {
+  width: calc(100% - 20px);
+}
+
+#history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#history-list li {
+  padding: 30px 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  transition: 0.2s;
+  background-color:rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#history-list li:hover {
+  transform: scale(1.01);
+}
+
+#history-list li.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#history-list img {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background:none;
+}
+
+#clear-history {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: var(--surface);
+  color: var(--txtcolor);
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+#clear-history:hover {
+  background: var(--border);
+  color: var(--txtcolor);
+}
+
+#close-history {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--txtcolor);
+  cursor: pointer;
+}

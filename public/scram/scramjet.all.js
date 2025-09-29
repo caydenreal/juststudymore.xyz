@@ -167,6 +167,7 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
                             <div id="troubleshooting">
                                 <p>Try:</p>
                                 <ul>
+                                    <li><h1>PRESS THE URL AND PRESS ENTER!!</h1></li>
                                     <li>Checking your internet connection</li>
                                     <li>Verifying you entered the correct address</li>
                                     <li>Clearing the site data</li>

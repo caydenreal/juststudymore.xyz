@@ -92,6 +92,11 @@
 </head>
 
 <body theme="classic">
+  <div id="history-container" style="display:none;">
+    <input type="text" id="history-search" placeholder="Filter history...">
+    <ul id="history-list"></ul>
+    <button id="clear-history">Clear History</button>
+  </div>
   <div id="customAlert"
     style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:300px;overflow-y:auto;background:black;color:var(--txtcolor);padding:30px;box-shadow:0 0 30px rgba(0,0,0,0.6);z-index:999999999999999999999999999;border-radius:16px;">
     <button id="alertClose"
@@ -163,9 +168,10 @@
   <div id="more-menu" class="menu" role="menu">
     <a href="#" onclick="copy();" role="menuitem">Clear Session</a>
     <a href="#" onclick="registerSW();" role="menuitem">Register SW</a>
+    <a href="#" role="menuitem">Bookmarklets [Soon]</a>
     <div class="divider"></div>
-    <a href="#" role="menuitem">History [soon]</a>
-    <a href="#" aria-label="New Tab" title="New Tab">New Tab</a>
+    <a href="#" id="toggle-history" role="menuitem">History</a>
+    <a href="#" role="menuitem">Bookmarks [Coming Soon]</a>
   </div>
   <section id="frames"></section>
   <script>
@@ -457,152 +463,110 @@
   }
 </script>
 <script>
-  (() => {
-    function $(id) {
-      return document.getElementById(id);
-    }
+const maxHistory = 1000;
+const input = document.getElementById('address');
+const historyContainer = document.getElementById('history-container');
+const historyList = document.getElementById('history-list');
+const historySearch = document.getElementById('history-search');
+const toggleBtn = document.getElementById('toggle-history');
+const clearBtn = document.getElementById('clear-history');
+const closeBtn = document.getElementById('close-history');
 
-    const titleInput = $("customTitle");
-    const faviconInput = $("customFavicon");
-    const select = $("presetSelect");
-    const applyBtn = $("applyBtn");
-    const resetBtn = $("resetBtn");
-    const hotkeyInput = $("hotkey-input");
-    const redirectURLInput = $("redirect-url-input");
-    const changeHotkeyButton = $("change-hotkey-btn");
-    const changeURLButton = $("change-URL-btn");
-    const aboutBlankToggle = $("aboutBlankToggle");
-    const adsToggle = $("adsToggle");
+function getHistory() {
+  return JSON.parse(localStorage.getItem('searchHistory') || '[]');
+}
 
-    function applySettings(title, favicon) {
-      if (title) {
-        document.title = title;
-        localStorage.setItem("TabCloak_Title", title);
-      }
-      if (favicon) {
-        document.querySelectorAll("link[rel~='icon'], link[rel='shortcut icon']").forEach(l => l.href = favicon);
-        localStorage.setItem("TabCloak_Favicon", favicon);
-      }
-    }
+function saveHistory(term) {
+  if (!term) return;
+  let history = getHistory();
+  history = history.filter(item => item.term !== term); // remove duplicates
+  let url = term.startsWith('http') ? term : `https://duckduckgo.com/?q=${encodeURIComponent(term)}`;
+  history.unshift({ term, title: term, url });
+  if (history.length > maxHistory) history.pop();
+  localStorage.setItem('searchHistory', JSON.stringify(history));
+  renderHistory();
+}
 
-    if (applyBtn && resetBtn && titleInput && faviconInput && select) {
-      applyBtn.addEventListener("click", () => applySettings(titleInput.value, faviconInput.value));
-      resetBtn.addEventListener("click", () => {
-        localStorage.removeItem("TabCloak_Title");
-        localStorage.removeItem("TabCloak_Favicon");
-        document.title = "Jordan's Math Work - V7";
-        const link = document.querySelector("link[rel~='icon']");
-        if (link) link.href = "/assets/images/jmw.png";
-        titleInput.value = "";
-        faviconInput.value = "";
-        select.value = "";
-      });
-    }
+function renderHistory(filter = '') {
+  const history = getHistory().filter(item =>
+    item.term.toLowerCase().includes(filter.toLowerCase())
+  );
+  historyList.innerHTML = '';
+  history.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.style.cursor = 'pointer';
+    li.style.display = 'flex';
+    li.style.alignItems = 'center';
+    li.style.gap = '8px';
+    li.style.opacity = 0;
+    li.style.transform = 'translateY(10px)';
+    li.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    li.style.backgroundColor = 'transparent';
 
-    if (select && titleInput && faviconInput) {
-      select.addEventListener("change", () => {
-        const presets = {
-          google: {
-            title: "Google",
-            favicon: "/assets/images/cloaks/gsearch.ico"
-          },
-          classroom: {
-            title: "Home",
-            favicon: "https://ssl.gstatic.com/classroom/favicon.png"
-          },
-          bing: {
-            title: "Bing",
-            favicon: "https://bing.com/favicon.ico"
-          },
-          nearpod: {
-            title: "Nearpod",
-            favicon: "https://nearpod.com/favicon.ico"
-          },
-          powerschool: {
-            title: "PowerSchool Sign In",
-            favicon: "https://powerschool.com/favicon.ico"
-          },
-          edge: {
-            title: "New Tab",
-            favicon: "/assets/images/newtabedge.png"
-          },
-          chrome: {
-            title: "New Tab",
-            favicon: "/assets/images/newtab.png"
-          },
-          lausd: {
-            title: "Los Angeles Unified School District / Homepage",
-            favicon: "https://www.lausd.org/cms/lib/CA01000043/Centricity/template/globalassets/images/favicon/favicon1.ico"
-          }
-        };
-        const selected = presets[select.value];
-        if (selected) {
-          titleInput.value = selected.title;
-          faviconInput.value = selected.favicon;
-          applySettings(selected.title, selected.favicon);
-        }
-      });
-    }
+    const img = document.createElement('img');
+    img.src = `https://www.google.com/s2/favicons?domain=${item.url}`;
+    img.width = 16;
+    img.height = 16;
 
-    let defaultHotkey = localStorage.getItem('hotkey') || '`';
-    let redirectURL = localStorage.getItem('redirectURL') || 'https://google.com';
+    const text = document.createElement('span');
+    text.textContent = `${item.title} (${item.url})`;
+    text.style.backgroundColor = 'transparent';
 
-    if (hotkeyInput) {
-      hotkeyInput.value = defaultHotkey;
-      hotkeyInput.addEventListener('keydown', e => {
-        e.preventDefault();
-        if (e.key.length === 1 || e.key === 'Escape' || e.key.startsWith('F')) {
-          hotkeyInput.value = e.key;
-        }
-      });
-    }
+    li.appendChild(img);
+    li.appendChild(text);
+    li.onclick = () => {
+      input.value = item.term;
+      window.location.href = `/active/index.html?autofill=${encodeURIComponent(item.term)}`;
+      historyContainer.style.display = 'none';
+    };
 
-    if (redirectURLInput) redirectURLInput.value = redirectURL;
+    historyList.appendChild(li);
 
-    if (changeHotkeyButton && hotkeyInput) {
-      changeHotkeyButton.addEventListener('click', () => {
-        const newHotkey = hotkeyInput.value.trim();
-        if (newHotkey) {
-          defaultHotkey = newHotkey;
-          localStorage.setItem('hotkey', defaultHotkey);
-          alert('Hotkey changed successfully to: ' + defaultHotkey);
-        }
-      });
-    }
+    // staggered fade-in
+    setTimeout(() => {
+      li.style.opacity = 1;
+      li.style.transform = 'translateY(0)';
+    }, index * 50);
+  });
+}
 
-    if (changeURLButton && redirectURLInput) {
-      changeURLButton.addEventListener('click', () => {
-        let newURL = redirectURLInput.value.trim();
-        if (newURL && !/^https?:\/\//i.test(newURL)) newURL = 'https://' + newURL;
-        if (newURL && !/\.[a-z]{2,}$/i.test(newURL)) newURL += '.com';
-        if (newURL) {
-          redirectURL = newURL;
-          localStorage.setItem('redirectURL', redirectURL);
-          alert('Redirect URL changed successfully to: ' + redirectURL);
-        }
-      });
-    }
+// Save on Enter
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveHistory(input.value);
+});
 
-    window.addEventListener('keydown', e => {
-      if (e.key === defaultHotkey) location.replace(redirectURL);
-    });
+// Filter in real-time
+historySearch.addEventListener('input', () => {
+  renderHistory(historySearch.value);
+});
 
-    const savedTitle = localStorage.getItem("TabCloak_Title");
-    const savedFavicon = localStorage.getItem("TabCloak_Favicon");
-    if (savedTitle) document.title = savedTitle;
-    if (savedFavicon) document.querySelectorAll("link[rel~='icon'], link[rel='shortcut icon']").forEach(l => l.href =
-      savedFavicon);
+// Toggle dropdown
+toggleBtn.addEventListener('click', () => {
+  historyContainer.style.display =
+    historyContainer.style.display === 'none' ? 'block' : 'none';
+  historySearch.value = '';
+  renderHistory();
+});
 
-    if (aboutBlankToggle) {
-      if (localStorage.getItem("aboutBlank") === null) localStorage.setItem("aboutBlank", "enabled");
-      aboutBlankToggle.checked = localStorage.getItem("aboutBlank") === "enabled";
-      aboutBlankToggle.addEventListener("change", () => {
-        const value = aboutBlankToggle.checked ? "enabled" : "disabled";
-        localStorage.setItem("aboutBlank", value);
-        location.reload();
-      });
-    }
-  })();
+// Close button
+closeBtn.addEventListener('click', () => {
+  historyContainer.style.display = 'none';
+});
+
+// Clear all history
+clearBtn.addEventListener('click', () => {
+  if (confirm('Clear all history?')) {
+    localStorage.removeItem('searchHistory');
+    renderHistory();
+  }
+});
+
+// Click outside to hide
+document.addEventListener('click', e => {
+  if (!historyContainer.contains(e.target) && e.target !== toggleBtn) {
+    historyContainer.style.display = 'none';
+  }
+});
 </script>
 <script type='text/javascript' src='//pl27730558.revenuecpmgate.com/65/cd/69/65cd69e2fbaffb69bf390369618ab8aa.js'>
 </script>
