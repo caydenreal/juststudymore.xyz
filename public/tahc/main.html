@@ -64,5 +64,15 @@
   <script type="module" src="/tahc/chat.js"></script>
 </body>
 <script src="/assets/scripts/index.js"></script>
+<script>
+  let count = parseInt(localStorage.getItem('alertCount')) || 0;
+
+  if (count < 2) {
+    alert(
+      "This will only appear 2 times. I usually clear chat with every update. Also, stop trying to get the admin key. I won't give it to you."
+      )
+    localStorage.setItem('alertCount', count + 1);
+  }
+</script>
 
 </html>

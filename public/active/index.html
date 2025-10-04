@@ -172,6 +172,7 @@
     <div class="divider"></div>
     <a href="#" id="toggle-history" role="menuitem">History</a>
     <a href="#" role="menuitem">Bookmarks [Coming Soon]</a>
+    <a href="#" onclick="disableAdverts();" role="menuitem">Disable Ads</a>
   </div>
   <section id="frames"></section>
   <script>
@@ -566,5 +567,32 @@ document.addEventListener('click', e => {
   alert("If the search error says 'there are no bare clients' then click the URL in our custom tabs and press enter! If you're on g^mes, some of them may take a long time to load due to their LARGE amount of assets! Be VERY patient.");
 }
 </script>
-
+<script>
+  // make a function that disables ads from this script <script type='text/javascript' src='//pl27730558.revenuecpmgate.com/65/cd/69/65cd69e2fbaffb69bf390369618ab8aa.js'></scrip t> and make the disable/enable switch texts when enabled/disabled
+  function disableAdverts() {
+    if (localStorage.getItem('adsDisabled') === 'true') {
+      localStorage.setItem('adsDisabled', 'false');
+      alert('Ads Enabled');
+    } else {
+      localStorage.setItem('adsDisabled', 'true');
+      alert('Ads Disabled');
+    }
+    location.reload();
+  }
+  if (localStorage.getItem('adsDisabled') === 'true') {
+    const adScript = document.querySelector("script[src*='revenuecpmgate.com']");
+    if (adScript) {
+      adScript.remove();
+    }
+  }
+  // change the text of the disable/enable switch based on if ads are disabled/enabled
+  const adToggle = document.querySelector("a[onclick='disableAdverts();']");
+  if (adToggle) {
+    if (localStorage.getItem('adsDisabled') === 'true') {
+      adToggle.textContent = 'Enable Ads';
+    } else {
+      adToggle.textContent = 'Disable Ads';
+    }
+  }
+</script>
 </html>

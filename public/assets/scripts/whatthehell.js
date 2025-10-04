@@ -72,9 +72,15 @@
     }, 1000);
   }
 
-  async function tryLaunch(apiUrl) {
+async function tryLaunch(apiUrl) {
     try {
-      const res = await fetch(`${apiUrl}/start-vm`);
+      const res = await fetch(`${apiUrl}/start-vm`, { 
+        method: 'GET',
+        signal: AbortSignal.timeout(10000)
+      });
+      
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      
       const data = await res.json();
 
       if (data.error || !data.session_id) throw new Error(data.error || 'Unknown');
@@ -89,7 +95,8 @@
 
       vmFrame.onload = ui.clearStatus;
       return true;
-    } catch {
+    } catch (err) {
+      console.log(`Failed to launch from ${apiUrl}:`, err.message);
       return false;
     }
   }

@@ -1,4 +1,4 @@
-// claude helped me write this.
+// claude helped me write this. only 50% of it tho
 import {
   initializeApp
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
@@ -23,13 +23,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC5PohPvNx70pduJinnYRVS-aSfVgpHYeQ",
-  authDomain: "chatwebz-1d1ce.firebaseapp.com",
-  projectId: "chatwebz-1d1ce",
-  storageBucket: "chatwebz-1d1ce.firebasestorage.app",
-  messagingSenderId: "564727763345",
-  appId: "1:564727763345:web:51749b5f92f7870e320a30",
-  measurementId: "G-N9XE09KK9D"
+  apiKey: "AIzaSyCPfZg4eawfwaXQ7DRo_YfujdfxSkcmrpc",
+  authDomain: "web-chat-1ba36.firebaseapp.com",
+  projectId: "web-chat-1ba36",
+  storageBucket: "web-chat-1ba36.firebasestorage.app",
+  messagingSenderId: "823978063179",
+  appId: "1:823978063179:web:8177a2dbed6fe4c870a4ce",
+  measurementId: "G-MSV33WM6NL"
 };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -218,7 +218,7 @@ async function checkAdminStatus() {
       sessionStorage.setItem("username", me.name);
       sessionStorage.setItem("usertag", me.tag);
 
-      updateOwnerBadge();  // <-- THIS LINE
+      updateOwnerBadge();
 
       return true;
     }
@@ -686,15 +686,31 @@ function openRoom(kind, id, title) {
   messagesEl.innerHTML = "";
   const [c1, c2, c3] = roomPathForCurrent();
   const messageQuery = query(collection(db, c1, c2, c3), orderBy("timestamp"));
-  unsubMsgs = onSnapshot(messageQuery, (snap) => {
-    snap.docChanges().forEach(async (change) => {
-      if (change.type === "added") {
-        const m = change.doc.data();
+  
+  let isFirstLoad = true;
+  
+  unsubMsgs = onSnapshot(messageQuery, async (snap) => {
+    if (isFirstLoad) {
+      // Initial load - render all messages
+      messagesEl.innerHTML = "";
+      for (const docSnap of snap.docs) {
+        const m = docSnap.data();
         const messageElement = await renderMessage(m);
         messagesEl.appendChild(messageElement);
-        showMessageNotification(m, current.type);
       }
-    });
+      isFirstLoad = false;
+    } else {
+      // Subsequent updates - only handle changes
+      for (const change of snap.docChanges()) {
+        if (change.type === "added") {
+          const m = change.doc.data();
+          const messageElement = await renderMessage(m);
+          messagesEl.appendChild(messageElement);
+          showMessageNotification(m, current.type);
+        }
+      }
+    }
+    
     messagesEl.scrollTop = messagesEl.scrollHeight;
   }, (error) => {
     console.error("Messages listener error:", error);
@@ -705,8 +721,7 @@ function openRoom(kind, id, title) {
 async function sendMessage() {
   const text = sanitizeInput(messageInput.value, 119);
   if (!text || !me.uid || !me.name) return;
-  
-  // Check if user is banned or muted
+
   try {
     const userQuery = query(collection(db, "users"), where("uid", "==", me.uid));
     const userSnap = await getDocs(userQuery);
@@ -715,7 +730,7 @@ async function sendMessage() {
       const userData = userSnap.docs[0].data();
       
       if (userData.banned) {
-        showStatusMessage("You are banned from this chat", "error");
+        showStatusMessage("You are banned from this chat, get a life", "error");
         messageInput.value = "";
         if (window.updateCharCount) window.updateCharCount();
         return;
@@ -1079,7 +1094,7 @@ adminPanelBtn.onclick = async () => {
           muteBtn.onclick = async (e) => {
             e.stopPropagation();
             try {
-              const newMuteTime = isMuted ? 0 : Date.now() + 600000; // 10 minutes
+              const newMuteTime = isMuted ? 0 : Date.now() + 600000;
               await updateDoc(doc(db, "users", u.docId), {
                 mutedUntil: newMuteTime
               });

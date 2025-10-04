@@ -161,33 +161,39 @@
       };
     }
   };
-  const adScriptLink = "https://partner.senty.com.au/partner-db4bbf29.js";
-  function enableAds() {
-    if (!document.querySelector(`script[src="${adScriptLink}"]`)) {
-      const script = document.createElement("script");
-      script.src = adScriptLink;
-      script.id = "adScript";
-      document.body.appendChild(script);
-    }
-    localStorage.setItem("ads", "enabled");
+const adScriptLink = "https://partner.senty.com.au/partner-db4bbf29.js";
+
+function enableAds() {
+  if (!document.querySelector(`script[src="${adScriptLink}"]`)) {
+    const script = document.createElement("script");
+    script.src = adScriptLink;
+    script.id = "adScript";
+    document.body.appendChild(script);
   }
-  function disableAds() {
-    const script = document.querySelector(`script[src="${adScriptLink}"]`);
-    if (script) script.remove();
-    localStorage.setItem("ads", "disabled");
-  }
-  const adsToggle = document.getElementById("adsToggle");
-  if (localStorage.getItem("ads") === null || localStorage.getItem("ads") === "enabled") {
+  localStorage.setItem("ads", "enabled");
+}
+
+function disableAds() {
+  const script = document.querySelector(`script[src="${adScriptLink}"]`);
+  if (script) script.remove();
+  localStorage.setItem("ads", "disabled");
+}
+
+const adsToggle = document.getElementById("adsToggle");
+
+if (localStorage.getItem("ads") === null || localStorage.getItem("ads") === "enabled") {
+  enableAds();
+  adsToggle.checked = true;
+} else {
+  adsToggle.checked = false;
+}
+
+adsToggle.addEventListener("change", () => {
+  if (adsToggle.checked) {
     enableAds();
-    adsToggle.checked = true;
   } else {
-    adsToggle.checked = false;
+    disableAds();
   }
-  adsToggle.addEventListener("change", () => {
-    if (adsToggle.checked) {
-      enableAds();
-    } else {
-      disableAds();
-    }
-  });
+  setTimeout(() => location.reload(), 100);
+});
 })();
