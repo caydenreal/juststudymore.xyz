@@ -93,6 +93,7 @@
 
 <body theme="classic">
   <div id="history-container" style="display:none;">
+    <button id="close-history" style="float:right;margin:10px;" aria-label="Close History" title="Close History">✕</button>
     <input type="text" id="history-search" placeholder="Filter history...">
     <ul id="history-list"></ul>
     <button id="clear-history">Clear History</button>
@@ -168,7 +169,7 @@
   <div id="more-menu" class="menu" role="menu">
     <a href="#" onclick="copy();" role="menuitem">Clear Session</a>
     <a href="#" onclick="registerSW();" role="menuitem">Register SW</a>
-    <a href="#" role="menuitem">Bookmarklets [Soon]</a>
+    <a href="#" role="menuitem">??? [soon!]</a>
     <div class="divider"></div>
     <a href="#" id="toggle-history" role="menuitem">History</a>
     <a href="#" role="menuitem">Bookmarks [Coming Soon]</a>
@@ -568,7 +569,6 @@ document.addEventListener('click', e => {
 }
 </script>
 <script>
-  // make a function that disables ads from this script <script type='text/javascript' src='//pl27730558.revenuecpmgate.com/65/cd/69/65cd69e2fbaffb69bf390369618ab8aa.js'></scrip t> and make the disable/enable switch texts when enabled/disabled
   function disableAdverts() {
     if (localStorage.getItem('adsDisabled') === 'true') {
       localStorage.setItem('adsDisabled', 'false');
@@ -585,7 +585,6 @@ document.addEventListener('click', e => {
       adScript.remove();
     }
   }
-  // change the text of the disable/enable switch based on if ads are disabled/enabled
   const adToggle = document.querySelector("a[onclick='disableAdverts();']");
   if (adToggle) {
     if (localStorage.getItem('adsDisabled') === 'true') {
