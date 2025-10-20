@@ -1339,6 +1339,12 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="gs">Go To Bed</span></a>
+                                <a class='link button' href='/active/index.html?autofill=https://script.google.com/macros/s/AKfycbwK_YDMKEccZyVOz_fpe66G4Je4VyFPdT10OdaKpM699Utzbq41n2m6OXqAzpX0oqrLTA/exec' data-tag="exclusive"><img
+                                                height="175" src="/assets/images/game/gag.png"
+                                                onerror="this.src='/assets/images/no-icon-found.png'" class="image"
+                                                width="175"><span class="span"
+                                                style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
+                                                alt="">Grow A Garden</span></a>
                                 <a class='link button' href='/yalp/ela.html?book=hw&type=local'><img height="175"
                                                 src="/assets/images/game/b.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
@@ -1997,6 +2003,12 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="roblox">Roblox</span></a>
+                                <a class='link button' href='/active' data-tag="exclusive"><img
+                                                height="175" src="/assets/images/game/"
+                                                onerror="this.src='/assets/images/no-icon-found.png'" class="image"
+                                                width="175"><span class="span"
+                                                style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
+                                                alt="">Roblox [Doblox, roblox clone]</span></a>
                                 <a class='link button' href='/yalp/ela.html?book=raft-wars&type=local'><img height="175"
                                                 src="/assets/images/game/raft-wars.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
@@ -2441,6 +2453,12 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="roblox">Slender; The Eight Pages</span></a>
+                                <a class='link button' href='/active/index.html?autofill=https://script.google.com/macros/s/AKfycbxJalyip_ETy_kolDAlSVxdcnLtn16P6gIoJ5kDwt1abHFX32SUJEOLCWU31veTffv2/exec' data-tag="exclusive"><img
+                                                height="175" src="/assets/images/game/sab.png"
+                                                onerror="this.src='/assets/images/no-icon-found.png'" class="image"
+                                                width="175"><span class="span"
+                                                style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
+                                                alt="">Steal A Brainrot</span></a>
                                 <a class='link button' href='/yalp/ela.html?book=tag&type=local'><img height="175"
                                                 src="/assets/images/game/tag.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
