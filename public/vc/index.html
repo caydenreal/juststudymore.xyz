@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jordan's M4th Work - Support Calls</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/assets/css/voice.css">
+</head>
+
+<body theme="classic">
+    <div class="container">
+        <div class="sidebar">
+            <div class="section">
+                <h3>Default Channels</h3>
+                <div id="defaultRooms"></div>
+            </div>
+
+            <div class="section">
+                <h3>Public Rooms</h3>
+                <div id="publicRooms"></div>
+                <button class="btn" onclick="showCreateModal('public')">
+                    <i class='bx bx-plus'></i>
+                    Create Public
+                </button>
+            </div>
+
+            <div class="section">
+                <h3>Private Rooms</h3>
+                <div id="privateRooms"></div>
+                <button class="btn btn-secondary" onclick="showCreateModal('private')">
+                    <i class='bx bx-plus'></i>
+                    Create Private
+                </button>
+            </div>
+        </div>
+
+        <div class="main">
+            <h2 class="room-title" id="roomTitle">Select a room to join</h2>
+
+            <div class="participants">
+                <h3>Participants (<span id="count">0</span>)</h3>
+                <div class="participant-grid" id="participants"></div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn mic-btn" id="micBtn" onclick="toggleMic()">
+                    <i class='bx bx-microphone' id="micIcon"></i>
+                    <span id="micText">Unmuted</span>
+                </button>
+                <button class="control-btn leave-btn" onclick="leaveRoom()">
+                    <i class='bx bx-log-out'></i>
+                    Leave
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="usernameModal">
+        <div class="modal-content">
+            <h2>Enter Username</h2>
+            <div class="form-group">
+                <input type="text" id="usernameInput" placeholder="Your username..." autofocus />
+            </div>
+            <button class="btn" onclick="setUsername()">
+                <i class='bx bx-check'></i>
+                Join
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <h2>Create Room</h2>
+            <div class="form-group">
+                <label>Room Name</label>
+                <input type="text" id="roomNameInput" placeholder="Enter room name..." />
+            </div>
+            <div class="form-group" id="passwordGroup" style="display: none;">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Enter password..." />
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="hideCreateModal()">Cancel</button>
+                <button class="btn btn-secondary" onclick="createRoom()">Create</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="/vc/cv.js" type="module"></script>
+<script src="/assets/scripts/index.js"></script>
+</html>
