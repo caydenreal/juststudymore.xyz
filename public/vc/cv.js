@@ -9,7 +9,8 @@ import {
     push,
     remove,
     onDisconnect,
-    update
+    update,
+    off
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
 const firebaseConfig = {
@@ -23,6 +24,7 @@ const firebaseConfig = {
     measurementId: "G-GSJWGXFEET"
 };
 
+console.log('Initializing Firebase...');
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
@@ -33,19 +35,21 @@ let isMuted = false;
 let stream = null;
 let roomType = '';
 let peerConnections = {};
+let remoteAudios = {};
 let myPeerId = null;
 let audioContext = null;
 let analyserNodes = {};
 let localAnalyser = null;
 let pendingCandidates = {};
+let participantsListener = null;
+let signalsListener = null;
+let makingOffer = {};
 
 const iceServers = {
-    iceServers: [{
-            urls: 'stun:stun.l.google.com:19302'
-        },
-        {
-            urls: 'stun:stun1.l.google.com:19302'
-        }
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' }
     ]
 };
 
@@ -69,6 +73,7 @@ function setUsername() {
         username = input;
         localStorage.setItem('voiceChatUsername', username);
         document.getElementById('usernameModal').classList.remove('show');
+        console.log('Username set:', username);
     }
 }
 
@@ -76,14 +81,13 @@ function initDefaults() {
     ['General Chat', 'Game Chat'].forEach(name => {
         const roomRef = ref(db, `rooms/default/${name.replace(/\s+/g, '_')}`);
         
-        // Only create if it doesn't exist
         onValue(roomRef, (snap) => {
             if (!snap.exists()) {
                 set(roomRef, {
                     name: name,
                     type: 'default',
                     created: Date.now()
-                });
+                }).then(() => console.log('Created default room:', name));
             }
         }, { onlyOnce: true });
     });
@@ -129,9 +133,27 @@ function displayRooms(snap, containerId, type) {
 }
 
 async function joinRoom(id, type, name, hasPassword) {
+    console.log('Attempting to join room:', name);
+    
     if (!username) {
         document.getElementById('usernameModal').classList.add('show');
         return;
+    }
+
+    // Check room capacity before joining
+    const roomRef = ref(db, `rooms/${type}/${id}/participants`);
+    const snapshot = await new Promise((resolve) => {
+        onValue(roomRef, resolve, { onlyOnce: true });
+    });
+    
+    if (snapshot.exists()) {
+        const participantCount = Object.keys(snapshot.val()).length;
+        const maxCapacity = type === 'private' ? 15 : 10;
+        
+        if (participantCount >= maxCapacity) {
+            alert(`Room is full! Maximum capacity: ${maxCapacity}`);
+            return;
+        }
     }
 
     if (hasPassword) {
@@ -142,16 +164,28 @@ async function joinRoom(id, type, name, hasPassword) {
         }
     }
 
-    if (currentRoom) await leaveRoom();
+    if (currentRoom) {
+        console.log('Already in a room, leaving first...');
+        await leaveRoom();
+    }
 
     currentRoom = id;
     roomType = type;
     myPeerId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     
+    console.log('My Peer ID:', myPeerId);
+    
     const roomTitle = document.getElementById('roomTitle');
     if (roomTitle) roomTitle.textContent = name;
 
+    // Show control buttons
+    const micBtn = document.getElementById('micBtn');
+    const leaveBtn = document.querySelector('.leave-btn');
+    if (micBtn) micBtn.classList.add('show');
+    if (leaveBtn) leaveBtn.classList.add('show');
+
     try {
+        console.log('Requesting microphone access...');
         stream = await navigator.mediaDevices.getUserMedia({
             audio: {
                 echoCancellation: true,
@@ -160,7 +194,11 @@ async function joinRoom(id, type, name, hasPassword) {
             }
         });
         
+        console.log('Microphone access granted');
+        
+        // Initialize audio context
         audioContext = new(window.AudioContext || window.webkitAudioContext)();
+        console.log('Audio context created');
         
         // Setup local audio monitoring
         const source = audioContext.createMediaStreamSource(stream);
@@ -169,35 +207,49 @@ async function joinRoom(id, type, name, hasPassword) {
         source.connect(localAnalyser);
         monitorAudio(myPeerId, localAnalyser);
         
+        console.log('Local audio monitoring setup');
+        
     } catch (err) {
-        alert('Microphone access denied!');
-        console.error(err);
+        console.error('Microphone error:', err);
+        alert('Microphone access denied! Please allow microphone access and try again.');
         return;
     }
 
+    // Join room in Firebase
     userRef = ref(db, `rooms/${type}/${id}/participants/${myPeerId}`);
-    const joinTime = Date.now();
     
-    await set(userRef, {
-        username: username,
-        joined: joinTime,
-        muted: isMuted
-    });
+    try {
+        await set(userRef, {
+            username: username,
+            joined: Date.now(),
+            muted: isMuted
+        });
+        console.log('Joined room in Firebase');
+    } catch (err) {
+        console.error('Firebase join error:', err);
+        alert('Failed to join room. Check console for details.');
+        return;
+    }
 
     onDisconnect(userRef).remove();
 
-    onValue(ref(db, `rooms/${type}/${id}/participants`), (snap) => {
+    // Listen for participants
+    const participantsRef = ref(db, `rooms/${type}/${id}/participants`);
+    participantsListener = onValue(participantsRef, (snap) => {
+        console.log('Participants updated');
         const container = document.getElementById('participants');
         if (!container) return;
         
         container.innerHTML = '';
         let count = 0;
+        const currentParticipants = [];
 
         if (snap.exists()) {
             snap.forEach((child) => {
                 const p = child.val();
                 const peerId = child.key;
                 count++;
+                currentParticipants.push(peerId);
 
                 const div = document.createElement('div');
                 div.className = 'participant';
@@ -211,8 +263,17 @@ async function joinRoom(id, type, name, hasPassword) {
                 `;
                 container.appendChild(div);
 
+                // Create peer connection for other users only if we're the one with higher peer ID
                 if (peerId !== myPeerId && !peerConnections[peerId]) {
-                    createPeerConnection(peerId);
+                    // Only initiate if our ID is greater (to prevent both sides from initiating)
+                    if (myPeerId > peerId) {
+                        console.log('Creating peer connection for:', peerId);
+                        setTimeout(() => createPeerConnection(peerId, true), 100);
+                    } else {
+                        // Still create the peer connection object but don't send offer yet
+                        console.log('Preparing to receive connection from:', peerId);
+                        createPeerConnection(peerId, false);
+                    }
                 }
             });
         }
@@ -222,17 +283,22 @@ async function joinRoom(id, type, name, hasPassword) {
 
         // Clean up disconnected peers
         Object.keys(peerConnections).forEach(peerId => {
-            if (!snap.child(peerId).exists()) {
+            if (!currentParticipants.includes(peerId)) {
+                console.log('Peer disconnected:', peerId);
                 closePeerConnection(peerId);
             }
         });
     });
 
-    onValue(ref(db, `rooms/${type}/${id}/signals/${myPeerId}`), (snap) => {
+    // Listen for WebRTC signals
+    const signalsRef = ref(db, `rooms/${type}/${id}/signals/${myPeerId}`);
+    signalsListener = onValue(signalsRef, (snap) => {
         if (snap.exists()) {
             snap.forEach(async (child) => {
                 const signal = child.val();
                 const fromPeer = signal.from;
+
+                console.log('Received signal:', signal.type, 'from:', fromPeer);
 
                 if (signal.type === 'offer') {
                     await handleOffer(fromPeer, signal.offer);
@@ -242,37 +308,77 @@ async function joinRoom(id, type, name, hasPassword) {
                     await handleCandidate(fromPeer, signal.candidate);
                 }
 
-                remove(child.ref);
+                // Delete the signal after processing
+                remove(child.ref).catch(e => console.log('Signal cleanup error:', e));
             });
         }
     });
 }
 
-function createPeerConnection(peerId) {
+function createPeerConnection(peerId, shouldOffer) {
+    console.log('Setting up peer connection for:', peerId, 'shouldOffer:', shouldOffer);
     const pc = new RTCPeerConnection(iceServers);
     peerConnections[peerId] = pc;
+    makingOffer[peerId] = false;
 
+    // Add local tracks
     stream.getTracks().forEach(track => {
         pc.addTrack(track, stream);
+        console.log('Added local track to peer:', peerId);
     });
 
+    // Handle incoming tracks
     pc.ontrack = (event) => {
-        const audio = new Audio();
+        console.log('Received remote track from:', peerId);
+        
+        if (!remoteAudios[peerId]) {
+            const audio = new Audio();
+            audio.autoplay = true;
+            audio.volume = 1.0;
+            remoteAudios[peerId] = audio;
+            console.log('Created audio element for:', peerId);
+        }
+        
+        const audio = remoteAudios[peerId];
         audio.srcObject = event.streams[0];
-        audio.autoplay = true;
-        audio.play().catch(e => console.log('Audio play failed:', e));
+        
+        // Force play
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('Audio playing for:', peerId);
+            }).catch(e => {
+                console.warn('Autoplay blocked for:', peerId, e);
+                // Add click listener to start audio
+                const startAudio = () => {
+                    audio.play().then(() => {
+                        console.log('Audio started after user interaction');
+                        document.removeEventListener('click', startAudio);
+                    }).catch(err => console.error('Still cannot play:', err));
+                };
+                document.addEventListener('click', startAudio);
+            });
+        }
 
-        const source = audioContext.createMediaStreamSource(event.streams[0]);
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        source.connect(analyser);
-        analyserNodes[peerId] = analyser;
-
-        monitorAudio(peerId, analyser);
+        // Setup audio analyzer
+        if (audioContext && audioContext.state === 'running') {
+            try {
+                const source = audioContext.createMediaStreamSource(event.streams[0]);
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+                analyserNodes[peerId] = analyser;
+                monitorAudio(peerId, analyser);
+                console.log('Audio analyzer setup for:', peerId);
+            } catch (e) {
+                console.warn('Could not create analyzer:', e);
+            }
+        }
     };
 
     pc.onicecandidate = (event) => {
         if (event.candidate) {
+            console.log('Sending ICE candidate to:', peerId);
             sendSignal(peerId, {
                 type: 'candidate',
                 candidate: event.candidate.toJSON(),
@@ -282,12 +388,23 @@ function createPeerConnection(peerId) {
     };
 
     pc.onconnectionstatechange = () => {
-        if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-            closePeerConnection(peerId);
+        console.log('Connection state for', peerId, ':', pc.connectionState);
+        if (pc.connectionState === 'connected') {
+            console.log('WebRTC connection established with:', peerId);
+        } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+            console.log('Connection failed/disconnected for:', peerId);
+            setTimeout(() => closePeerConnection(peerId), 1000);
         }
     };
 
-    createOffer(peerId);
+    pc.oniceconnectionstatechange = () => {
+        console.log('ICE state for', peerId, ':', pc.iceConnectionState);
+    };
+
+    // Only create offer if we should
+    if (shouldOffer) {
+        createOffer(peerId);
+    }
 }
 
 function monitorAudio(peerId, analyser) {
@@ -319,120 +436,87 @@ async function createOffer(peerId) {
     if (!pc) return;
 
     try {
+        makingOffer[peerId] = true;
+        console.log('Creating offer for:', peerId);
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
+        console.log('Offer created and set locally');
 
         sendSignal(peerId, {
             type: 'offer',
             offer: offer,
             from: myPeerId
         });
+        console.log('Offer sent to:', peerId);
     } catch (err) {
         console.error('Error creating offer:', err);
+    } finally {
+        makingOffer[peerId] = false;
     }
 }
 
 async function handleOffer(fromPeer, offer) {
-    // If peer connection exists and is in wrong state, close and recreate
-    if (peerConnections[fromPeer]) {
-        const pc = peerConnections[fromPeer];
-        if (pc.signalingState !== 'stable' && pc.signalingState !== 'closed') {
-            console.log('Peer in wrong state, recreating:', pc.signalingState);
-            closePeerConnection(fromPeer);
-        }
-    }
+    console.log('Handling offer from:', fromPeer);
     
+    // Create connection if it doesn't exist
     if (!peerConnections[fromPeer]) {
-        const pc = new RTCPeerConnection(iceServers);
-        peerConnections[fromPeer] = pc;
-
-        stream.getTracks().forEach(track => {
-            pc.addTrack(track, stream);
-        });
-
-        pc.ontrack = (event) => {
-            const audio = new Audio();
-            audio.srcObject = event.streams[0];
-            audio.autoplay = true;
-            audio.play().catch(e => console.log('Audio play failed:', e));
-
-            const source = audioContext.createMediaStreamSource(event.streams[0]);
-            const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            source.connect(analyser);
-            analyserNodes[fromPeer] = analyser;
-
-            monitorAudio(fromPeer, analyser);
-        };
-
-        pc.onicecandidate = (event) => {
-            if (event.candidate) {
-                sendSignal(fromPeer, {
-                    type: 'candidate',
-                    candidate: event.candidate.toJSON(),
-                    from: myPeerId
-                });
-            }
-        };
-
-        pc.onconnectionstatechange = () => {
-            if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-                closePeerConnection(fromPeer);
-            }
-        };
+        console.log('Creating new peer connection for incoming offer');
+        createPeerConnection(fromPeer, false);
     }
 
     const pc = peerConnections[fromPeer];
     
     try {
-        // Check if we're in the right state
-        if (pc.signalingState !== 'stable' && pc.signalingState !== 'have-remote-offer') {
-            console.log('Cannot handle offer in state:', pc.signalingState);
+        const offerCollision = (pc.signalingState !== "stable" || makingOffer[fromPeer]);
+        
+        const ignoreOffer = offerCollision && myPeerId < fromPeer;
+        if (ignoreOffer) {
+            console.log('Ignoring offer due to collision, we have priority');
             return;
         }
         
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        console.log('Remote description set');
         
-        // Process any queued candidates
+        // Process queued candidates
         if (pendingCandidates[fromPeer]) {
+            console.log('Processing', pendingCandidates[fromPeer].length, 'queued candidates');
             for (const candidate of pendingCandidates[fromPeer]) {
-                try {
-                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
-                } catch (e) {
-                    console.error('Error adding queued candidate:', e);
-                }
+                await pc.addIceCandidate(new RTCIceCandidate(candidate));
             }
             delete pendingCandidates[fromPeer];
         }
         
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
+        console.log('Answer created');
 
         sendSignal(fromPeer, {
             type: 'answer',
             answer: answer,
             from: myPeerId
         });
+        console.log('Answer sent');
     } catch (err) {
         console.error('Error handling offer:', err);
-        // If there's an error, try to recover by closing the connection
-        closePeerConnection(fromPeer);
     }
 }
 
 async function handleAnswer(fromPeer, answer) {
+    console.log('Handling answer from:', fromPeer);
     const pc = peerConnections[fromPeer];
+    
     if (!pc) {
-        console.log('No peer connection for answer from:', fromPeer);
+        console.warn('No peer connection for answer');
         return;
     }
     
     try {
-        // Only set remote description if we're waiting for an answer
         if (pc.signalingState === 'have-local-offer') {
             await pc.setRemoteDescription(new RTCSessionDescription(answer));
+            console.log('Answer processed successfully');
         } else {
-            console.log('Ignoring answer, wrong state:', pc.signalingState);
+            console.warn('Ignoring answer, wrong state:', pc.signalingState);
         }
     } catch (err) {
         console.error('Error handling answer:', err);
@@ -440,27 +524,27 @@ async function handleAnswer(fromPeer, answer) {
 }
 
 async function handleCandidate(fromPeer, candidate) {
+    console.log('Handling ICE candidate from:', fromPeer);
     const pc = peerConnections[fromPeer];
     
     if (!pc) {
-        console.log('No peer connection for candidate from:', fromPeer);
+        console.warn('No peer connection for candidate');
         return;
     }
     
     try {
-        // If remote description is set, add candidate immediately
         if (pc.remoteDescription && pc.remoteDescription.type) {
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            console.log('ICE candidate added');
         } else {
-            // Queue candidate for later
             if (!pendingCandidates[fromPeer]) {
                 pendingCandidates[fromPeer] = [];
             }
             pendingCandidates[fromPeer].push(candidate);
-            console.log('Queued candidate for', fromPeer);
+            console.log('Candidate queued');
         }
     } catch (err) {
-        console.error('Error adding ICE candidate:', err);
+        console.error('ICE candidate error:', err);
     }
 }
 
@@ -468,10 +552,16 @@ function sendSignal(toPeer, signal) {
     if (!currentRoom || !roomType) return;
     
     const signalRef = push(ref(db, `rooms/${roomType}/${currentRoom}/signals/${toPeer}`));
-    set(signalRef, signal);
+    set(signalRef, signal).then(() => {
+        console.log('Signal sent successfully');
+    }).catch(err => {
+        console.error('Signal send error:', err);
+    });
 }
 
 function closePeerConnection(peerId) {
+    console.log('Closing connection with:', peerId);
+    
     if (peerConnections[peerId]) {
         peerConnections[peerId].close();
         delete peerConnections[peerId];
@@ -479,9 +569,30 @@ function closePeerConnection(peerId) {
     if (analyserNodes[peerId]) {
         delete analyserNodes[peerId];
     }
+    if (remoteAudios[peerId]) {
+        remoteAudios[peerId].pause();
+        remoteAudios[peerId].srcObject = null;
+        delete remoteAudios[peerId];
+    }
+    if (pendingCandidates[peerId]) {
+        delete pendingCandidates[peerId];
+    }
+    if (makingOffer[peerId] !== undefined) {
+        delete makingOffer[peerId];
+    }
 }
 
 async function leaveRoom() {
+    console.log('Leaving room...');
+    
+    // Remove listeners
+    if (participantsListener) {
+        off(ref(db, `rooms/${roomType}/${currentRoom}/participants`));
+    }
+    if (signalsListener) {
+        off(ref(db, `rooms/${roomType}/${currentRoom}/signals/${myPeerId}`));
+    }
+    
     if (userRef) await remove(userRef);
     if (stream) stream.getTracks().forEach(t => t.stop());
 
@@ -505,6 +616,11 @@ async function leaveRoom() {
     myPeerId = null;
     peerConnections = {};
     analyserNodes = {};
+    remoteAudios = {};
+    pendingCandidates = {};
+    participantsListener = null;
+    signalsListener = null;
+    makingOffer = {};
     
     const roomTitle = document.getElementById('roomTitle');
     const participants = document.getElementById('participants');
@@ -513,6 +629,8 @@ async function leaveRoom() {
     if (roomTitle) roomTitle.textContent = 'Select a room to join';
     if (participants) participants.innerHTML = '';
     if (count) count.textContent = '0';
+    
+    console.log('Left room');
 }
 
 function toggleMic() {
@@ -541,10 +659,10 @@ function toggleMic() {
     }
 
     if (userRef) {
-        update(userRef, {
-            muted: isMuted
-        });
+        update(userRef, { muted: isMuted });
     }
+    
+    console.log(isMuted ? 'Muted' : 'Unmuted');
 }
 
 function showCreateModal(type) {
@@ -599,7 +717,7 @@ function createRoom() {
     hideCreateModal();
 }
 
-// Export functions to window
+// Export functions
 window.setUsername = setUsername;
 window.toggleMic = toggleMic;
 window.leaveRoom = leaveRoom;
@@ -614,7 +732,7 @@ if (usernameInput) {
         if (e.key === 'Enter') setUsername();
     });
 }
-
-// Initialize
 checkUsername();
 listenRooms();
+
+console.log('voice chat initialized. Check console for detailed logs.');
