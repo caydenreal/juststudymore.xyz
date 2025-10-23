@@ -27,7 +27,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find the latest successful workflow run
+      - name: Stuff
         id: latest_run
         run: |
           latest_run_id=$(gh run list --repo "mercuryworkshop/scramjet" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
@@ -40,20 +40,14 @@ jobs:
 
           rm -rf ./public/scram
           mv ./temp_artifact ./public/scram
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          
-      - name: Commit and push changes
-        run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add ./public/scram
-          git commit -m "Update Scramjet artifact from mercuryworkshop/scramjet" || echo "No changes to commit"
+          git commit -am "chore: update scramjet"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
-          message: "Update Scramjet artifact from mercuryworkshop/scramjet"
