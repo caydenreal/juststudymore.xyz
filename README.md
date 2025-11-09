@@ -40,9 +40,9 @@
 - <a href="//github.com/slqntdevss">Slqnt - themes function and ports</a>
 - <a href="//groq.com">Groq AI</a>
 - <a href="//github.com/3kh0">3kh0 - Game CDN</a>
-- <a href="//github.com/willoo0">Willo - CSS designer</a>
 - <a href="//github.com/binbashbanana">BinBashBanana -.swf game files</a>
-- <a href="#">Titanium Network & Mercury Workshop - Ultraviolet</a>
+- <a href="//github.com/titaniumnetwork">Titanium Network - Ultr@v|olet</a>
+- <a href="//github.com/mercuryworkshop">MercuryWorkshop - Scr@mJ3t</a>
 - UGS Assets, Aukak, 98corbins, gn-math, SLQNT - Ports provided to jordan's math work
 - Bromine team - Setting up scramjet and UV
 - Thatguy_toji - the founder
