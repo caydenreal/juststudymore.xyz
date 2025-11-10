@@ -65,7 +65,7 @@ body[theme="legacyv6"] {
 }
 
 body[theme="evil-teto"] {
-  background: url("/assets/images/themeimage/teto.png");
+  background: url("/assets/images/themeimage/teto.png") no-repeat center center fixed;
   background-color:#444;
   background-attachment: fixed;
   --bgcolor: #444444;
@@ -79,7 +79,7 @@ body[theme="evil-teto"] {
 }
 
 body[theme="pearto"] {
-  background: url("/assets/images/themeimage/pearto.png");
+  background: url("/assets/images/themeimage/pearto.png") no-repeat center center fixed;
   background-color:lightgray;
   background-attachment: fixed;
   --bgcolor: lightgray;
@@ -101,4 +101,17 @@ body[theme="incog"] {
   --surface-hover: #1d4a32;
   --border: #0e2d1f;
   --glow: #3cb371;
+}
+
+body[theme="femboy"] {
+  background: url("/assets/images/femboy.png") no-repeat center center fixed;
+  background-size: cover;
+  --bgcolor: #ffb6c1;
+  --primary: #ff69b4;
+  --secondary: #ff8dc7;
+  --txtcolor: #cacaca;
+  --surface: rgba(255, 182, 193, 0.25);
+  --surface-hover: rgba(255, 182, 193, 0.4);
+  --border: rgba(255, 105, 180, 0.3);
+  --glow: rgba(255, 105, 180, 0.5);
 }

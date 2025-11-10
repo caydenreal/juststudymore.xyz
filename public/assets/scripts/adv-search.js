@@ -71,7 +71,7 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="1o1 football">1 on 1 football</span></a>
-                                <a class='link button' href='/yalp/ela.html?book=1o1/basketball&type=local'><img
+                                <a class='link button' href='/active/index.html?autofill=https://script.google.com/macros/s/AKfycbwDVKSBVuNK4axJUnLuqHJHWh7EubO4icUJldVaUPoVqjsalm2SB9mCKg7x6f0rU7O6OA/exec'><img
                                                 height="175" src="/assets/images/game/1on1.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
                                                 width="175"><span class="span"
@@ -2999,6 +2999,12 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;;"
                                                 alt="au">Wrestle Bros</span></a>
+                                <a class='link button' href='/active/index.html?autofill=https://games.construct.net/4061/latest'><img
+                                                height="175" src="/assets/images/game/wb.png"
+                                                onerror="this.src='/assets/images/no-icon-found.png'" class="image"
+                                                width="175"><span class="span"
+                                                style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
+                                                alt="hcr">Wheelie Bike</span></a>
                                 <a class='link button' href='/yalp/ela.html?book=x-trial-racing&type=3kh0'><img
                                                 height="175" src="/assets/images/game/xtrial.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
