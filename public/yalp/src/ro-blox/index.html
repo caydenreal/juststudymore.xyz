@@ -1,15 +1,61 @@
-<title>Road Blocks :troll:</title>
+<!DOCTYPE html>
+<html lang="en">
 
-<script ></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox Generation</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      font-size: 1.2rem;
+      background: #000;
+      color: #fff;
+      z-index: 9999
+    }
 
-<div align="center">
-  <iframe src="/active/index.html?autofill=https://www.easyfun.gg/embed/roblox.html?start=1" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;border:none;" allowfullscreen=""></iframe>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TQ8CVXYBF9"></script>
+    #autolink {
+      margin-top: 20px;
+      font-family: sans-serif;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body theme="classic">
+  <div id="loading">Getting Resources...</div>
+  <div align="center">
+    <a id="autolink" href="#" style="display:none">Open</a>
+  </div>
+</body>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TQ8CVXYBF9');
+  document.addEventListener("DOMContentLoaded", async () => {
+    const load = document.getElementById("loading");
+    try {
+      load.textContent = "Fetching API...";
+      const r = await fetch("https://api.ipify.org?format=json");
+      const j = await r.json();
+      load.textContent = "Processing data...";
+      const d = j.ip.replace(/\D/g, "").slice(0, 2);
+      load.textContent = "Finalizing link...";
+      const link = document.getElementById("autolink");
+      link.href = `/active/index.html?autofill=https://${d}.ip.nowgg.fun/apps/a/19900/b.html`;
+      setTimeout(() => {
+        load.style.display = "none";
+        link.style.display = "inline";
+      }, 1000);
+    } catch (e) {
+      load.textContent = "Error loading IP.";
+    }
+  });
 </script>
+
+</html>

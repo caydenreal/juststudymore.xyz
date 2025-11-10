@@ -185,6 +185,7 @@ export class Tab {
     this.frame.setAttribute("title", "Poxy Frame");
     this.frame.setAttribute("id", `frame-${tabCounter}`);
     this.frame.setAttribute("src", "/active/newtab.html");
+    this.frame.setAttribute("sandbox", "allow-scripts allow-forms allow-same-origin allow-popups");
     framesElement.appendChild(this.frame);
 
     this.switch();
