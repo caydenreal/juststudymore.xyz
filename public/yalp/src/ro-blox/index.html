@@ -25,7 +25,8 @@
       font-family: sans-serif;
       font-size: 1.2rem;
       text-decoration: none;
-      color: #007bff;
+      background-color: var(--surface);
+      color: var(--txtcolor)
     }
   </style>
 </head>
@@ -53,7 +54,7 @@
         link.style.display = "inline";
       }, 1000);
     } catch (e) {
-      load.textContent = "Error loading IP.";
+      load.textContent = "Error loading resources.";
     }
   });
 </script>

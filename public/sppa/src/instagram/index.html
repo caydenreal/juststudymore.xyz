@@ -1,4 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roblox Generation</title>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      font-size: 1.2rem;
+      background: #000;
+      color: #fff;
+      z-index: 9999
+    }
+
+    #autolink {
+      margin-top: 20px;
+      font-family: sans-serif;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #007bff;
+    }
+  </style>
+</head>
+
+<body theme="classic">
+  <div id="loading">Getting Resources...</div>
+  <div align="center">
+    <a id="autolink" href="#" style="display:none">Open</a>
+  </div>
+</body>
 <script>
-    alert('Start the VM and go to instagram!')
+  document.addEventListener("DOMContentLoaded", async () => {
+    const load = document.getElementById("loading");
+    try {
+      load.textContent = "Fetching API...";
+      const r = await fetch("https://api.ipify.org?format=json");
+      const j = await r.json();
+      load.textContent = "Processing data...";
+      const d = j.ip.replace(/\D/g, "").slice(0, 2);
+      load.textContent = "Finalizing link...";
+      const link = document.getElementById("autolink");
+      link.href = `/active/index.html?autofill=https://${d}.ip.nowgg.fun/apps/instagram/1228/instagram.html`;
+      setTimeout(() => {
+        load.style.display = "none";
+        link.style.display = "inline";
+      }, 1000);
+    } catch (e) {
+      load.textContent = "Error loading resources.";
+    }
+  });
 </script>
-<iframe style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;border:none;" src="/vm.html"></iframe>
+
+</html>
