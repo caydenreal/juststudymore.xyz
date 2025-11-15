@@ -13,15 +13,16 @@ import {
     off,
     serverTimestamp
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
- 
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCicTySOeFnwm2h9WC4-wdSuhOIH-DzmoA",
-  authDomain: "voicechat-global-838c1.firebaseapp.com",
-  projectId: "voicechat-global-838c1",
-  storageBucket: "voicechat-global-838c1.firebasestorage.app",
-  messagingSenderId: "609671588783",
-  appId: "1:609671588783:web:d928d4716976330e011d5a",
-  measurementId: "G-KNGTZQ4YTM"
+    apiKey: "AIzaSyBQOtHw9sY99DGR5bIAQZcu_Xn0fNMKCmU",
+    authDomain: "vc-chat2.firebaseapp.com",
+    databaseURL: "https://vc-chat2-default-rtdb.firebaseio.com",
+    projectId: "vc-chat2",
+    storageBucket: "vc-chat2.firebasestorage.app",
+    messagingSenderId: "326015674254",
+    appId: "1:326015674254:web:a82801c466880c5e87e6df",
+    measurementId: "G-VTLM21H9XQ"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -50,10 +51,15 @@ let isTabVisible = true;
 let tabHiddenTime = null;
 
 const iceServers = {
-    iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' }
+    iceServers: [{
+            urls: 'stun:stun.l.google.com:19302'
+        },
+        {
+            urls: 'stun:stun1.l.google.com:19302'
+        },
+        {
+            urls: 'stun:stun2.l.google.com:19302'
+        }
     ]
 };
 
@@ -71,7 +77,7 @@ const OFFENSIVE_WORDS = [
 
 function containsOffensiveWords(text) {
     const lowerText = text.toLowerCase();
-    
+
     // Check for exact matches and variations
     for (const word of OFFENSIVE_WORDS) {
         // Check for the word with word boundaries
@@ -79,14 +85,14 @@ function containsOffensiveWords(text) {
         if (regex.test(lowerText)) {
             return true;
         }
-        
+
         // Check for the word without spaces or with special characters
         const stripped = lowerText.replace(/[^a-z0-9]/g, '');
         if (stripped.includes(word.replace(/[^a-z0-9]/g, ''))) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -106,36 +112,36 @@ function checkUsername() {
 
 function setUsername() {
     const input = document.getElementById('usernameInput').value.trim();
-    
+
     if (!input) {
         alert('Please enter a username!');
         return;
     }
-    
+
     if (input.length > 15) {
         alert('Username must be 15 characters or less!');
         return;
     }
-    
+
     // Check for offensive words
     if (containsOffensiveWords(input)) {
         alert('Username contains inappropriate content. Please choose a different name.');
         return;
     }
-    
+
     // Check for email pattern
     if (input.includes('@') || input.includes('.com') || input.includes('.net') || input.includes('.org')) {
         alert('Username cannot be an email address!');
         return;
     }
-    
+
     // Check for reserved names (case insensitive)
     const reservedNames = ['owner', 'developer', 'admin', 'moderator', 'mod', 'staff', 'support', 'official', 'system', 'bot'];
     if (reservedNames.includes(input.toLowerCase())) {
         alert('This username is reserved and cannot be used!');
         return;
     }
-    
+
     username = input;
     localStorage.setItem('voiceChatUsername', username);
     document.getElementById('usernameModal').classList.remove('show');
@@ -144,7 +150,7 @@ function setUsername() {
 function initDefaults() {
     ['General Chat', 'Game Chat'].forEach(name => {
         const roomRef = ref(db, `rooms/default/${name.replace(/\s+/g, '_')}`);
-        
+
         onValue(roomRef, (snap) => {
             if (!snap.exists()) {
                 set(roomRef, {
@@ -154,14 +160,16 @@ function initDefaults() {
                     lastActivity: Date.now()
                 });
             }
-        }, { onlyOnce: true });
+        }, {
+            onlyOnce: true
+        });
     });
 }
 
 // Start room cleanup checker
 function startRoomCleanup() {
     if (roomCleanupInterval) return;
-    
+
     roomCleanupInterval = setInterval(() => {
         checkAndCleanupRooms();
     }, 60 * 1000); // Check every minute
@@ -169,7 +177,7 @@ function startRoomCleanup() {
 
 async function checkAndCleanupRooms() {
     const now = Date.now();
-    
+
     ['public', 'private'].forEach(type => {
         const roomsRef = ref(db, `rooms/${type}`);
         onValue(roomsRef, (snap) => {
@@ -177,30 +185,32 @@ async function checkAndCleanupRooms() {
                 snap.forEach(async (child) => {
                     const room = child.val();
                     const roomId = child.key;
-                    
+
                     const hasParticipants = room.participants && Object.keys(room.participants).length > 0;
                     const lastActivity = room.lastActivity || room.created || 0;
                     const timeSinceActivity = now - lastActivity;
-                    
+
                     if (!hasParticipants && timeSinceActivity > ROOM_CLEANUP_TIME) {
                         console.log(`Cleaning up inactive room: ${room.name}`);
                         await remove(ref(db, `rooms/${type}/${roomId}`));
                     }
                 });
             }
-        }, { onlyOnce: true });
+        }, {
+            onlyOnce: true
+        });
     });
 }
 
 function startSilenceCheck() {
     if (silenceCheckInterval) return;
-    
+
     silenceCheckInterval = setInterval(() => {
         // Don't check if tab is hidden
         if (!isTabVisible) return;
-        
+
         const timeSilent = Date.now() - lastSpeakTime;
-        
+
         if (timeSilent > SILENCE_TIMEOUT && currentRoom) {
             console.log('Auto-disconnecting due to 5 minutes of silence');
             alert('Disconnected due to 5 minutes of inactivity');
@@ -219,7 +229,9 @@ function stopSilenceCheck() {
 function updateLastActivity() {
     if (currentRoom && roomType) {
         const roomRef = ref(db, `rooms/${roomType}/${currentRoom}`);
-        update(roomRef, { lastActivity: Date.now() }).catch(e => {
+        update(roomRef, {
+            lastActivity: Date.now()
+        }).catch(e => {
             console.warn('Failed to update room activity:', e);
         });
     }
@@ -237,7 +249,7 @@ function listenRooms() {
 function displayRooms(snap, containerId, type) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    
+
     container.innerHTML = '';
 
     if (snap.exists()) {
@@ -273,13 +285,15 @@ async function joinRoom(id, type, name, hasPassword) {
 
     const roomRef = ref(db, `rooms/${type}/${id}/participants`);
     const snapshot = await new Promise((resolve) => {
-        onValue(roomRef, resolve, { onlyOnce: true });
+        onValue(roomRef, resolve, {
+            onlyOnce: true
+        });
     });
-    
+
     if (snapshot.exists()) {
         const participantCount = Object.keys(snapshot.val()).length;
         const maxCapacity = type === 'private' ? 15 : 10;
-        
+
         if (participantCount >= maxCapacity) {
             alert(`Room is full! Maximum capacity: ${maxCapacity}`);
             return;
@@ -301,14 +315,14 @@ async function joinRoom(id, type, name, hasPassword) {
     currentRoom = id;
     roomType = type;
     myPeerId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
+
     // Reset silence timer
     lastSpeakTime = Date.now();
     startSilenceCheck();
-    
+
     // Update room activity
     updateLastActivity();
-    
+
     const roomTitle = document.getElementById('roomTitle');
     if (roomTitle) roomTitle.textContent = name;
 
@@ -325,15 +339,15 @@ async function joinRoom(id, type, name, hasPassword) {
                 autoGainControl: true
             }
         });
-        
+
         audioContext = new(window.AudioContext || window.webkitAudioContext)();
-        
+
         const source = audioContext.createMediaStreamSource(stream);
         localAnalyser = audioContext.createAnalyser();
         localAnalyser.fftSize = 256;
         source.connect(localAnalyser);
         monitorAudio(myPeerId, localAnalyser);
-        
+
     } catch (err) {
         console.error('microphone error:', err);
         alert('Microphone access denied! Please allow microphone access and try again.');
@@ -341,7 +355,7 @@ async function joinRoom(id, type, name, hasPassword) {
     }
 
     userRef = ref(db, `rooms/${type}/${id}/participants/${myPeerId}`);
-    
+
     try {
         await set(userRef, {
             username: username,
@@ -360,7 +374,7 @@ async function joinRoom(id, type, name, hasPassword) {
     participantsListener = onValue(participantsRef, (snap) => {
         const container = document.getElementById('participants');
         if (!container) return;
-        
+
         container.innerHTML = '';
         let count = 0;
         const currentParticipants = [];
@@ -441,10 +455,10 @@ function createPeerConnection(peerId, shouldOffer) {
             audio.volume = 1.0;
             remoteAudios[peerId] = audio;
         }
-        
+
         const audio = remoteAudios[peerId];
         audio.srcObject = event.streams[0];
-        
+
         const playPromise = audio.play();
         if (playPromise !== undefined) {
             playPromise.catch(e => {
@@ -549,24 +563,24 @@ async function handleOffer(fromPeer, offer) {
     }
 
     const pc = peerConnections[fromPeer];
-    
+
     try {
         const offerCollision = (pc.signalingState !== "stable" || makingOffer[fromPeer]);
-        
+
         const ignoreOffer = offerCollision && myPeerId < fromPeer;
         if (ignoreOffer) {
             return;
         }
-        
+
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
-        
+
         if (pendingCandidates[fromPeer]) {
             for (const candidate of pendingCandidates[fromPeer]) {
                 await pc.addIceCandidate(new RTCIceCandidate(candidate));
             }
             delete pendingCandidates[fromPeer];
         }
-        
+
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
 
@@ -582,12 +596,12 @@ async function handleOffer(fromPeer, offer) {
 
 async function handleAnswer(fromPeer, answer) {
     const pc = peerConnections[fromPeer];
-    
+
     if (!pc) {
         console.warn('no peer connection for answer');
         return;
     }
-    
+
     try {
         if (pc.signalingState === 'have-local-offer') {
             await pc.setRemoteDescription(new RTCSessionDescription(answer));
@@ -601,12 +615,12 @@ async function handleAnswer(fromPeer, answer) {
 
 async function handleCandidate(fromPeer, candidate) {
     const pc = peerConnections[fromPeer];
-    
+
     if (!pc) {
         console.warn('no peer connection for candidate');
         return;
     }
-    
+
     try {
         if (pc.remoteDescription && pc.remoteDescription.type) {
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
@@ -623,7 +637,7 @@ async function handleCandidate(fromPeer, candidate) {
 
 function sendSignal(toPeer, signal) {
     if (!currentRoom || !roomType) return;
-    
+
     const signalRef = push(ref(db, `rooms/${roomType}/${currentRoom}/signals/${toPeer}`));
     set(signalRef, signal).catch(err => {
         console.error('signal send error:', err);
@@ -653,14 +667,14 @@ function closePeerConnection(peerId) {
 
 async function leaveRoom() {
     stopSilenceCheck();
-    
+
     if (participantsListener) {
         off(ref(db, `rooms/${roomType}/${currentRoom}/participants`));
     }
     if (signalsListener) {
         off(ref(db, `rooms/${roomType}/${currentRoom}/signals/${myPeerId}`));
     }
-    
+
     if (userRef) await remove(userRef);
     if (stream) stream.getTracks().forEach(t => t.stop());
 
@@ -689,11 +703,11 @@ async function leaveRoom() {
     participantsListener = null;
     signalsListener = null;
     makingOffer = {};
-    
+
     const roomTitle = document.getElementById('roomTitle');
     const participants = document.getElementById('participants');
     const count = document.getElementById('count');
-    
+
     if (roomTitle) roomTitle.textContent = 'Select a room to join';
     if (participants) participants.innerHTML = '';
     if (count) count.textContent = '0';
@@ -703,7 +717,7 @@ function toggleMic() {
     if (!stream) return;
 
     isMuted = !isMuted;
-    
+
     stream.getAudioTracks().forEach(track => {
         track.enabled = !isMuted;
     });
@@ -725,7 +739,9 @@ function toggleMic() {
     }
 
     if (userRef) {
-        update(userRef, { muted: isMuted });
+        update(userRef, {
+            muted: isMuted
+        });
     }
 }
 
@@ -735,10 +751,10 @@ function showCreateModal(type) {
         return;
     }
     roomType = type;
-    
+
     const modal = document.getElementById('createModal');
     const passwordGroup = document.getElementById('passwordGroup');
-    
+
     if (modal) modal.classList.add('show');
     if (passwordGroup) passwordGroup.style.display = type === 'private' ? 'block' : 'none';
 }
@@ -747,7 +763,7 @@ function hideCreateModal() {
     const modal = document.getElementById('createModal');
     const roomNameInput = document.getElementById('roomNameInput');
     const passwordInput = document.getElementById('passwordInput');
-    
+
     if (modal) modal.classList.remove('show');
     if (roomNameInput) roomNameInput.value = '';
     if (passwordInput) passwordInput.value = '';
@@ -756,9 +772,9 @@ function hideCreateModal() {
 function createRoom() {
     const nameInput = document.getElementById('roomNameInput');
     const passInput = document.getElementById('passwordInput');
-    
+
     if (!nameInput) return;
-    
+
     const name = nameInput.value.trim();
     const pass = passInput ? passInput.value.trim() : '';
 
@@ -771,7 +787,7 @@ function createRoom() {
         alert('Room name must be 15 characters or less!');
         return;
     }
-    
+
     // Check for offensive words in room name
     if (containsOffensiveWords(name)) {
         alert('Room name contains inappropriate content. Please choose a different name.');
@@ -804,11 +820,11 @@ const usernameInput = document.getElementById('usernameInput');
 if (usernameInput) {
     // Set max length on the input field
     usernameInput.maxLength = 15;
-    
+
     usernameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') setUsername();
     });
-    
+
     // Also validate on input to prevent pasting long text
     usernameInput.addEventListener('input', (e) => {
         if (e.target.value.length > 15) {

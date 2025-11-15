@@ -101,7 +101,7 @@ export function makeURL(input, template = "https://duckduckgo.com/?q=%s") {
 async function updateBareMux() {
 	if (transportURL != null && wispURL != null) {
 		console.log(`lethal.js: Setting BareMux to ${transportURL} and Wisp to ${wispURL}`);
-		await connection.setTransport(transportURL, [{ wisp: wispURL }]);
+		await connection.setTransport("/reflux/index.mjs", [{base: transportURL, wisp: wispURL }]);
 	}
 }
 

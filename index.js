@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import sanitizeHtml from "sanitize-html";
+import { refluxPath } from "@nightnetwork/reflux";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(express.static(join(fileURLToPath(import.meta.url), "../public/")));
 app.use("/mux/", express.static(baremuxPath));
 app.use("/epoxy/", express.static(epoxyPath));
+app.use("/reflux/", express.static(refluxPath));
 
 app.post("/api/chat", async (req, res) => {
   try {
