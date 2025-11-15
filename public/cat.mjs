@@ -101,7 +101,7 @@ export function makeURL(input, template = "https://duckduckgo.com/?q=%s") {
 async function updateBareMux() {
 	if (transportURL != null && wispURL != null) {
 		console.log(`lethal.js: Setting BareMux to ${transportURL} and Wisp to ${wispURL}`);
-		await connection.setTransport("/reflux/index.mjs", [{base: transportURL, wisp: wispURL }]);
+		await connection.setTransport(transportURL, [{ wisp: wispURL }]);
 	}
 }
 
@@ -180,7 +180,7 @@ export class Tab {
     this.frame = document.createElement("iframe");
     this.frame.setAttribute(
       "style",
-      "width: 99vw; height: 82vh; border: 0; border-radius:10px; margin-top:10px;",
+      "width: 99vw; height: 82vh; border: 0; position: fixed; border-radius:10px; margin-top:10px;",
     );
     this.frame.setAttribute("title", "Poxy Frame");
     this.frame.setAttribute("id", `frame-${tabCounter}`);
