@@ -325,7 +325,7 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
-                                                alt="binding of issac">Binding of Issac</span></a>
+                                                alt="binding of issac">Binding of Issac; Wrath of the Lamb</span></a>
                                 <a class='link button' href='/yalp/ela.html?book=bitlife&type=local'><img height="175"
                                                 src="/assets/images/game/btlf.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
@@ -602,7 +602,7 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="cat mario">Cat Mario</span></a>
-                                <a class='link button' href='/yalp/ela.html?book=acid-bunny&type=local'><img
+                                <a class='link button' href='/active/index.html?autofill=https://script.google.com/macros/s/AKfycbxiYJVxz4HPt3JTbXtgX7swXZ734vV_Wr4QcqmQrBMydobF0wIOH_eqQx9HFVCkH4cX/exec'><img
                                                 height="175" src="/assets/images/game/clicker-heroes.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
                                                 width="175"><span class="span"
@@ -1028,7 +1028,7 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="Five Nights At Winstons">Five Nights at Winston</span></a>
-                                <a class='link button' href='/active/index.html?autofill=https://scratch.mit.edu/projects/787266563/embed'><img height="175"
+                                <a class='link button' href='/yalp/ela.html?book=fnaf&type=local'><img height="175"
                                                 src="/assets/images/game/fnaf.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"
                                                 width="175"><span class="span"
@@ -3109,29 +3109,29 @@ function showExclusives() {
 }
 
 function randomActivity() {
-    const gameLinks = document.querySelectorAll('.box .link:not([href*="dsc.gg"])');
-    
-    let availableLinks;
-    if (currentMode === "exclusive") {
-        availableLinks = Array.from(gameLinks).filter(link => link.dataset.tag === "exclusive");
-    } else {
-        availableLinks = Array.from(gameLinks);
-    }
-    
-    const searchInput = document.getElementById("searchInput").value.trim();
-    if (searchInput) {
-        availableLinks = availableLinks.filter(link => link.style.display !== "none");
-    }
+        const gameLinks = document.querySelectorAll('.box .link:not([href*="dsc.gg"])');
 
-    if (availableLinks.length > 0) {
-        const randomIndex = Math.floor(Math.random() * availableLinks.length);
-        const randomLink = availableLinks[randomIndex];
-        const url = randomLink.getAttribute('href');
-        
-        window.location.href = url;
-    } else {
-        alert("No games available to select!");
-    }
+        let availableLinks;
+        if (currentMode === "exclusive") {
+                availableLinks = Array.from(gameLinks).filter(link => link.dataset.tag === "exclusive");
+        } else {
+                availableLinks = Array.from(gameLinks);
+        }
+
+        const searchInput = document.getElementById("searchInput").value.trim();
+        if (searchInput) {
+                availableLinks = availableLinks.filter(link => link.style.display !== "none");
+        }
+
+        if (availableLinks.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableLinks.length);
+                const randomLink = availableLinks[randomIndex];
+                const url = randomLink.getAttribute('href');
+
+                window.location.href = url;
+        } else {
+                alert("No games available to select!");
+        }
 }
 
 document.getElementById("searchInput").addEventListener("input", filterActivites);
