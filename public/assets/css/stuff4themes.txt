@@ -1,0 +1,8 @@
+      --bgcolor: #1e1e2e;
+      --primary: #89b4fa;
+      --secondary: #f38ba8;
+      --txtcolor: #cdd6f4;
+      --surface: rgba(137, 180, 250, 0.1);
+      --surface-hover: rgba(137, 180, 250, 0.15);
+      --border: rgba(137, 180, 250, 0.2);
+      --glow: rgba(137, 180, 250, 0.3);

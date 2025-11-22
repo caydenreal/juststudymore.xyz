@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
 @import url('/assets/css/themes.css');
 
-* {
+body {
   color: var(--txtcolor);
   background: var(--bgcolor);
   font-family: 'Inter', sans-serif;
@@ -15,7 +15,7 @@
 nav {
   display: flex;
   align-items: center;
-  background: var(--bgcolor);
+  background: transparent;
   height: 40px;
   padding: 0 8px;
   font-family: 'Inter', sans-serif;
@@ -29,6 +29,7 @@ nav {
   gap: 4px;
   scrollbar-width: thin;
   scrollbar-color: var(--txtcolor) transparent;
+
 }
 
 #tabs::-webkit-scrollbar {
@@ -86,7 +87,6 @@ nav {
 
 [data-tab-id] button {
   margin-left: 6px;
-  margin-bottom: 3px;
   background: none;
   border: none;
   color: var(--surface);
@@ -162,6 +162,9 @@ hr {
   vertical-align: middle;
   min-width: calc(100vw - 310px);
   outline: none;
+  background: var(--bgcolor);
+  color:var(--txtcolor);
+  font-family: 'Inter', sans-serif;
 }
 
 .fc {

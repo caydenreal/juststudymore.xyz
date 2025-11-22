@@ -1,12 +1,12 @@
 body[theme="classic"] {
-      --bgcolor: #1e1e2e;
-      --primary: #89b4fa;
-      --secondary: #f38ba8;
-      --txtcolor: #cdd6f4;
-      --surface: rgba(137, 180, 250, 0.1);
-      --surface-hover: rgba(137, 180, 250, 0.15);
-      --border: rgba(137, 180, 250, 0.2);
-      --glow: rgba(137, 180, 250, 0.3);
+      --bgcolor: #0a1a0e;
+      --primary: #2ecc71;
+      --secondary: #ff4d4d;
+      --txtcolor: #e8ffe8;
+      --surface: rgba(46, 204, 113, 0.15);
+      --surface-hover: rgba(46, 204, 113, 0.25);
+      --border: rgba(46, 204, 113, 0.3);
+      --glow: rgba(46, 204, 113, 0.4);
 }
 
 body[theme="light"] {
@@ -109,9 +109,20 @@ body[theme="femboy"] {
   --bgcolor: #ffb6c1;
   --primary: #ff69b4;
   --secondary: #ff8dc7;
-  --txtcolor: #cacaca;
-  --surface: rgba(255, 182, 193, 0.25);
-  --surface-hover: rgba(255, 182, 193, 0.4);
+  --txtcolor: #434343;
+  --surface: rgba(255, 182, 193, 0.921);
+  --surface-hover: rgba(255, 182, 193, 0.652);
   --border: rgba(255, 105, 180, 0.3);
   --glow: rgba(255, 105, 180, 0.5);
+}
+
+body[theme="chrihmuh"] {
+      --bgcolor: #0f1b14;
+      --primary: #ff4d4d;
+      --secondary: #2ecc71;
+      --txtcolor: #ffffff;
+      --surface: rgba(255, 77, 77, 0.15);
+      --surface-hover: rgba(255, 77, 77, 0.25);
+      --border: rgba(255, 255, 255, 0.2);
+      --glow: rgba(255, 0, 0, 0.35);
 }

@@ -4,175 +4,206 @@
 <meta charset="UTF-8" />
 <title>JRDNTube</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-  :root {
-    --bgcolor: #1e1e2e;
-    --txtcolor: #cdd6f4;
-    --surface: #313244;
-    --surface-hover: #45475a;
-    --primary: #89b4fa;
-    --secondary: #f38ba8;
-    --border: #585b70;
-    --glow: rgba(137, 180, 250, 0.3);
+  <style>
+    @import url('/assets/css/themes.css');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
+
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background: var(--bgcolor);
+      color: var(--txtcolor);
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    #searchBar {
+      width: 50vw;
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--txtcolor);
+      outline: none;
+      transition: 0.3s;
+    }
+
+    #searchBar:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--glow);
+      background: var(--surface-hover);
+    }
+
+    #videoGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .videoCard {
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border);
+    }
+
+    .videoCard:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 20px var(--glow);
+    }
+
+    .thumb {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .title {
+      margin: 8px 0 4px;
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .channel,
+    .stats {
+      font-size: 12px;
+      color: var(--txtcolor);
+    }
+
+    #pagination {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: var(--bgcolor);
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 0 5px var(--glow);
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--secondary);
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    button:disabled {
+      background: gray;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    #playerModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 30, 46, 0.95);
+      color: var(--txtcolor);
+      z-index: 99999999;
+      padding: 40px 20px;
+      overflow-y: auto;
+      backdrop-filter: blur(6px);
+    }
+
+    #closeBtn {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: var(--secondary);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    #closeBtn:hover {
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    #playerBox iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+    #videoInfo {
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 15px;
+    }
+
+    #videoInfo h2 {
+      margin: 0;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    #videoInfo p {
+      margin: 5px 0;
+      color: var(--txtcolor);
+    }
+
+    .error {
+      text-align: center;
+      color: var(--secondary);
+      padding: 20px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--txtcolor);
+    }
+
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TQ8CVXYBF9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    dataLayer.push(arguments);
   }
-  
-  body {
-    font-family: "Inter", Arial, sans-serif;
-    background: var(--bgcolor);
-    color: var(--txtcolor);
-    margin: 0;
-    padding: 20px;
-    overflow-x: hidden;
-  }
-  #searchBar {
-    width: 50vw;
-    padding: 12px 15px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--txtcolor);
-    outline: none;
-    transition: 0.3s;
-  }
-  #searchBar:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 10px var(--glow);
-    background: var(--surface-hover);
-  }
-  #videoGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-  }
-  .videoCard {
-    background: var(--surface);
-    padding: 10px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid var(--border);
-  }
-  .videoCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 20px var(--glow);
-  }
-  .thumb {
-    width: 100%;
-    border-radius: 10px;
-    object-fit: cover;
-  }
-  .title {
-    margin: 8px 0 4px;
-    font-size: 14px;
-    font-weight: bold;
-    color: var(--primary);
-  }
-  .channel, .stats {
-    font-size: 12px;
-    color: var(--txtcolor);
-  }
-  #pagination {
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-  }
-  button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background: var(--primary);
-    color: var(--bgcolor);
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 5px var(--glow);
-  }
-  button:hover:not(:disabled) {
-    background: var(--secondary);
-    box-shadow: 0 0 12px var(--glow);
-  }
-  button:disabled {
-    background: gray;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-  #playerModal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(30, 30, 46, 0.95);
-    color: var(--txtcolor);
-    z-index: 99999999;
-    padding: 40px 20px;
-    overflow-y: auto;
-    backdrop-filter: blur(6px);
-  }
-  #closeBtn {
-    position: fixed;
-    top: 20px;
-    right: 30px;
-    font-size: 28px;
-    background: none;
-    border: none;
-    color: var(--secondary);
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  #closeBtn:hover {
-    color: var(--primary);
-    transform: scale(1.1);
-  }
-  #playerBox iframe {
-    width: 100%;
-    height: 500px;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 0 20px var(--glow);
-  }
-  #videoInfo {
-    margin-top: 20px;
-    border-top: 1px solid var(--border);
-    padding-top: 15px;
-  }
-  #videoInfo h2 {
-    margin: 0;
-    color: var(--primary);
-    font-size: 20px;
-  }
-  #videoInfo p {
-    margin: 5px 0;
-    color: var(--txtcolor);
-  }
-  .error {
-    text-align: center;
-    color: var(--secondary);
-    padding: 20px;
-  }
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: var(--txtcolor);
-  }
-  .spinner {
-    border: 3px solid var(--border);
-    border-top: 3px solid var(--primary);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-</style>
+  gtag("js", new Date());
+  gtag("config", "G-TQ8CVXYBF9");
+</script>
 </head>
 
-<body>
+<body theme="classic">
 <center>
   <input id="searchBar" type="text" placeholder="Search videos..." />
 </center>
@@ -186,15 +217,19 @@
   <div id="playerBox"></div>
   <div id="videoInfo"></div>
 </div>
-      <script type="text/javascript">
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({ pageLanguage: "en", layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL }, "google_translate_element");
-      }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({ pageLanguage: "en", layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL }, "google_translate_element");
+  }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 <script>
 let currentVideos = [];
 let lastQuery = "games";
+let currentPage = 0;
+const VIDEOS_PER_PAGE = 12;
 
 const CORS_PROXY = "https://corsproxy.io/?";
 
@@ -251,10 +286,9 @@ async function fetchVideos(query) {
     }
     
     currentVideos = videos;
-    displayVideos(videos);
-    
-    document.getElementById("nextBtn").disabled = true;
-    document.getElementById("prevBtn").disabled = true;
+    currentPage = 0;
+    displayCurrentPage();
+    updatePaginationButtons();
 
   } catch (err) {
     console.error(err);
@@ -278,6 +312,19 @@ function displayVideos(videos) {
     card.addEventListener("click", () => openPlayer(video));
     grid.appendChild(card);
   });
+}
+
+function displayCurrentPage() {
+  const startIdx = currentPage * VIDEOS_PER_PAGE;
+  const endIdx = startIdx + VIDEOS_PER_PAGE;
+  const pageVideos = currentVideos.slice(startIdx, endIdx);
+  displayVideos(pageVideos);
+}
+
+function updatePaginationButtons() {
+  const totalPages = Math.ceil(currentVideos.length / VIDEOS_PER_PAGE);
+  document.getElementById("prevBtn").disabled = currentPage === 0;
+  document.getElementById("nextBtn").disabled = currentPage >= totalPages - 1;
 }
 
 function openPlayer(video) {
@@ -307,13 +354,34 @@ document.getElementById("searchBar").addEventListener("keypress", e => {
   }
 });
 
-document.getElementById("nextBtn").addEventListener("click", () => {
+document.getElementById("nextBtn").addEventListener("click", async () => {
+  const totalPages = Math.ceil(currentVideos.length / VIDEOS_PER_PAGE);
+  
+  if (currentPage < totalPages - 1) {
+    currentPage++;
+    displayCurrentPage();
+    updatePaginationButtons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // Load more videos with the same query
+    document.getElementById("nextBtn").disabled = true;
+    document.getElementById("nextBtn").textContent = "Loading...";
+    await fetchVideos(lastQuery);
+    document.getElementById("nextBtn").textContent = "Next";
+  }
 });
 
 document.getElementById("prevBtn").addEventListener("click", () => {
+  if (currentPage > 0) {
+    currentPage--;
+    displayCurrentPage();
+    updatePaginationButtons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 });
 
 fetchVideos(lastQuery);
 </script>
+<script src="/assets/scripts/index.js"></script>
 </body>
 </html>
