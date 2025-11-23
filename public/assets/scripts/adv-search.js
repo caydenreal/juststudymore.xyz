@@ -1229,6 +1229,12 @@ const htmlString = `            <a class='link button' target="_blank" href='htt
                                                 width="175"><span class="span"
                                                 style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
                                                 alt="hcr">Friday Night Funkin vs. Zardy</span></a>
+                                <a class='link button' href='/yalp/ela.html?book=fnf/mariomad&type=local' data-tag="exclusive"><img
+                                                height="175" src="/assets/images/game/mariomadness.png"
+                                                onerror="this.src='/assets/images/no-icon-found.png'" class="image"
+                                                width="175"><span class="span"
+                                                style="padding:15px;margin:auto;display:block;width:170px;height:45px;line-height:25px;overflow:hidden;text-align:center;white-space:wrap;"
+                                                alt="hcr">Friday Night Funkin; Mario's Madness</span></a>
                                 <a class='link button' href='/active/index.html?autofill=https://w8.snokido.com/games/html5/friday-night-funkin/tord03/index.html' data-tag="exclusive"><img
                                                 height="175" src="/assets/images/game/tord.png"
                                                 onerror="this.src='/assets/images/no-icon-found.png'" class="image"

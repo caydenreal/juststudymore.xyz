@@ -23,15 +23,15 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-const firebaseConfig = {
-   apiKey: "AIzaSyDXy_o49-yjJMHfQALVCqqklWA7-OCQ3xE",
-   authDomain: "chattingsys-5b74e.firebaseapp.com",
-   projectId: "chattingsys-5b74e",
-   storageBucket: "chattingsys-5b74e.firebasestorage.app",
-   messagingSenderId: "299919901570",
-   appId: "1:299919901570:web:ea5a199f35e6f0c35d059b",
-   measurementId: "G-56SP4JFZ4T"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyDXy_o49-yjJMHfQALVCqqklWA7-OCQ3xE",
+    authDomain: "chattingsys-5b74e.firebaseapp.com",
+    projectId: "chattingsys-5b74e",
+    storageBucket: "chattingsys-5b74e.firebasestorage.app",
+    messagingSenderId: "299919901570",
+    appId: "1:299919901570:web:ea5a199f35e6f0c35d059b",
+    measurementId: "G-56SP4JFZ4T"
+  };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
