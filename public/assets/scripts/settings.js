@@ -1,5 +1,8 @@
 (() => {
-  const isAboutBlankEnabled = localStorage.getItem("aboutBlank") !== "disabled";
+  if (localStorage.getItem("aboutBlank") === null) {
+  localStorage.setItem("aboutBlank", "disabled");
+  }  
+  const isAboutBlankEnabled = localStorage.getItem("aboutBlank") === "enabled";
   const name = localStorage.getItem("name") || "Home";
   const icon = localStorage.getItem("icon") || "https://ssl.gstatic.com/classroom/favicon.png";
   if (isAboutBlankEnabled) {
@@ -32,7 +35,7 @@
         style.border = style.outline = "none";
         style.width = style.height = "100%";
         doc.body.appendChild(iframe);
-        location.replace("https://www.google.com/search?q=math+help");
+        location.replace("https://classroom.google.com");
       }
     }
   }
@@ -181,11 +184,13 @@ function disableAds() {
 
 const adsToggle = document.getElementById("adsToggle");
 
-if (localStorage.getItem("ads") === null || localStorage.getItem("ads") === "enabled") {
+// Ads OFF by default
+disableAds();
+adsToggle.checked = false;
+
+if (localStorage.getItem("ads") === "enabled") {
   enableAds();
   adsToggle.checked = true;
-} else {
-  adsToggle.checked = false;
 }
 
 adsToggle.addEventListener("change", () => {
