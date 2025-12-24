@@ -1,0 +1,64 @@
+name: Download Latest Scramjet Artifact
+
+on:
+  workflow_dispatch: # allows manual trigger
+  schedule:
+    - cron: '0 * * * *' # runs every hour, optional — you can remove this if not needed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  download-artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Install GitHub CLI
+        run: sudo apt-get update && sudo apt-get install -y gh
+
+      - name: Authenticate GitHub CLI
+        run: gh auth setup-git
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Stuff
+        id: latest_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest_run_id=$(gh run list --repo "mercuryworkshop/scramjet" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+
+          mkdir -p ./temp_artifact
+          gh run download $latest_run_id \
+            --name scramjet \
+            --repo "mercuryworkshop/scramjet" \
+            --dir ./temp_artifact
+
+          rm -rf ./public/scram
+          mv ./temp_artifact ./public/scram
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "chore: update scramjet"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push changes
+        if: steps.latest_run.outputs.has_changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ github.token }}
+          branch: ${{ github.ref }}
