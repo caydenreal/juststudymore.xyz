@@ -1,6 +1,8 @@
 > [!IMPORTANT]
 > FAIR WARNING! Clearly stealing our code will result in DMCA takedown.
+> 
 > Please consider giving this respritory a star to support us.
+> 
 > This repo will get archived very soon.
 
 
