@@ -1,8 +1,9 @@
 > [!IMPORTANT]
-> Please consider giving this respritory a star to support us.
-
-> [!IMPORTANT]
 > FAIR WARNING! Clearly stealing our code will result in DMCA takedown.
+> Please consider giving this respritory a star to support us.
+> This repo will get archived very soon.
+
+
 # 
 <p align="center"><img src="https://github.com/JustJxrdanWasDefinetlyTaken/jmw-node/blob/main/public/assets/images/jmw.png?raw=true" height="200">
 </p>
