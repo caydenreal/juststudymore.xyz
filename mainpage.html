@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyMore - Student Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f0f0f;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 25px;
+            font-size: 14px;
+        }
+
+        .header-nav a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .header-nav a:hover {
+            color: #6366f1;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .login-container {
+            background: #1a1a1a;
+            padding: 45px 40px;
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-header h1 {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            outline: none;
+            background: #0f0f0f;
+            color: #fff;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 12px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 12px;
+            text-align: left;
+            display: none;
+            padding: 10px 14px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer-links a {
+            color: #6366f1;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer-links a:hover {
+            color: #8b5cf6;
+        }
+
+        .footer {
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #6366f1;
+        }
+
+        .info-banner {
+            background: rgba(99, 102, 241, 0.1);
+            color: #a5b4fc;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-logo">
+            <span>📚</span>
+            <span>StudyMore</span>
+        </div>
+        <div class="header-nav">
+            <a href="#">About</a>
+            <a href="#">Resources</a>
+            <a href="#">Help</a>
+        </div>
+    </div>
+
+    <div class="info-banner">
+        Student Resource Portal • Sign in to access your course materials
+    </div>
+
+    <div class="main-content">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to continue to your resources</p>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Student ID or Email</label>
+                    <input type="text" id="username" name="username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn">Sign In</button>
+                
+                <div class="error-message" id="errorMessage">
+                    Incorrect credentials. Please try again.
+                </div>
+
+                <div class="footer-links">
+                    <a href="#">Forgot password?</a>
+                    <a href="#">Create account</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2024 StudyMore Educational Resources • <a href="#">Privacy</a> • <a href="#">Terms</a>
+    </div>
+
+    <script>
+        const validCredentials = {
+            'student': 'study2024',
+            'demo': 'demo123',
+            'test': 'test456'
+        };
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (validCredentials[username] && validCredentials[username] === password) {
+                const newWindow = window.open('about:blank');
+                
+                newWindow.document.open();
+                newWindow.document.write(getResourcePageHTML());
+                newWindow.document.close();
+                
+                newWindow.document.title = 'StudyMore - Course Materials';
+                
+                document.getElementById('loginForm').reset();
+            } else {
+                errorMessage.classList.add('show');
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 4000);
+            }
+        });
+
+        function getResourcePageHTML() {
+            return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyMore - Course Materials</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f0f0f;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .header {
+            background: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 25px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .header-nav span {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .header-nav span:hover {
+            color: #6366f1;
+        }
+
+        .breadcrumb {
+            padding: 20px 30px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .breadcrumb a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #8b5cf6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 35px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .resource-card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            border-color: #6366f1;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+        }
+
+        .resource-card:hover::before {
+            opacity: 1;
+        }
+
+        .resource-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .resource-title {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .resource-description {
+            font-size: 14px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .resource-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            gap: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 12px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-logo">
+            <span>📚</span>
+            <span>StudyMore</span>
+        </div>
+        <div class="header-nav">
+            <span>Dashboard</span>
+            <span>My Courses</span>
+            <span>Calendar</span>
+            <span>Resources</span>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        <a href="#">Home</a> / <a href="#">Courses</a> / <span style="color: #fff;">Interactive Resources</span>
+    </div>
+
+    <div class="container">
+        <h1 class="page-title">Interactive Resources</h1>
+        <p class="page-subtitle">Access your study materials and practice exercises</p>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">118</div>
+                <div class="stat-label">Total Minutes</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="resource-card">
+                <div class="resource-icon">📊</div>
+                <div class="resource-title">Resource Module 1</div>
+                <div class="resource-description">Interactive study material for comprehensive learning and skill development</div>
+                <div class="resource-meta">
+                    <span>📅 Updated today</span>
+                    <span>⏱️ 15 min</span>
+                </div>
+                <span class="status-badge">Available</span>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-icon">📝</div>
+                <div class="resource-title">Resource Module 2</div>
+                <div class="resource-description">Practice exercises and interactive challenges to test your knowledge</div>
+                <div class="resource-meta">
+                    <span>📅 Updated today</span>
+                    <span>⏱️ 20 min</span>
+                </div>
+                <span class="status-badge">Available</span>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-icon">🎯</div>
+                <div class="resource-title">Resource Module 3</div>
+                <div class="resource-description">Skill-building interactive content with real-world applications</div>
+                <div class="resource-meta">
+                    <span>📅 Updated today</span>
+                    <span>⏱️ 10 min</span>
+                </div>
+                <span class="status-badge">Available</span>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-icon">🧠</div>
+                <div class="resource-title">Resource Module 4</div>
+                <div class="resource-description">Critical thinking and problem solving exercises for advanced learners</div>
+                <div class="resource-meta">
+                    <span>📅 Updated today</span>
+                    <span>⏱️ 25 min</span>
+                </div>
+                <span class="status-badge">Available</span>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-icon">📚</div>
+                <div class="resource-title">Resource Module 5</div>
+                <div class="resource-description">Supplemental learning activities and additional practice materials</div>
+                <div class="resource-meta">
+                    <span>📅 Updated today</span>
+                    <span>⏱️ 18 min</span>
+                </div>
+                <span class="status-badge">Available</span>
+            </div>
+
+            <div class="resource-card">
+                <div class="resource-icon">🎓</div>
+                <div class="resource-title">Resource Module 6</div>
+                <div class="resource-description">Advanced practice materials with comprehensive review content</div>
+                <div class="resource-meta">
+                    <span>📅 Updated today</span>
+                    <span>⏱️ 30 min</span>
+                </div>
+                <span class="status-badge">Available</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+            `;
+        }
+    </script>
+</body>
+</html>
