@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal</title>
+    <title>StudyMore Portal - Login</title>
     <style>
         * {
             margin: 0;
@@ -13,19 +13,124 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #0f0f0f;
+            background: #0a0a0f;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated gradient background */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #16213e 100%);
+            z-index: 0;
+        }
+
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        /* Particle canvas */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+            z-index: 1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #6366f1, transparent);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb2 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #8b5cf6, transparent);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 5s;
+        }
+
+        .orb3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #ec4899, transparent);
+            top: 50%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(100px, -100px) scale(1.1); }
+            66% { transform: translate(-100px, 100px) scale(0.9); }
+        }
+
+        /* Content wrapper */
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
+        /* Header with glass effect */
         .header {
-            background: #1a1a1a;
-            border-bottom: 1px solid #2a2a2a;
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 15px 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header-logo {
@@ -37,6 +142,16 @@
             color: #ffffff;
         }
 
+        .logo-icon {
+            font-size: 28px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
         .header-nav {
             display: flex;
             gap: 25px;
@@ -46,13 +161,47 @@
         .header-nav a {
             color: #888;
             text-decoration: none;
-            transition: color 0.2s;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .header-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transition: width 0.3s;
         }
 
         .header-nav a:hover {
             color: #6366f1;
         }
 
+        .header-nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Info banner */
+        .info-banner {
+            background: rgba(99, 102, 241, 0.15);
+            backdrop-filter: blur(10px);
+            color: #a5b4fc;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            animation: fadeIn 1s ease 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Main content */
         .main-content {
             flex: 1;
             display: flex;
@@ -61,230 +210,689 @@
             padding: 40px 20px;
         }
 
+        /* Glass morphism login container */
         .login-container {
-            background: #1a1a1a;
-            padding: 45px 40px;
-            border-radius: 12px;
-            border: 1px solid #2a2a2a;
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 50px 45px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             width: 100%;
-            max-width: 420px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            max-width: 440px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        0 0 80px rgba(99, 102, 241, 0.1);
+            animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
+            position: relative;
         }
 
         .login-header h1 {
             color: #ffffff;
-            font-size: 26px;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3)); }
+            50% { filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.5)); }
         }
 
         .login-header p {
-            color: #888;
-            font-size: 14px;
+            color: #aaa;
+            font-size: 15px;
         }
 
         .form-group {
-            margin-bottom: 22px;
+            margin-bottom: 24px;
+            position: relative;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #aaa;
+            margin-bottom: 10px;
+            color: #ccc;
             font-weight: 500;
-            font-size: 13px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper {
+            position: relative;
         }
 
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
+            padding: 16px 20px;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
             font-size: 15px;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             outline: none;
-            background: #0f0f0f;
+            background: rgba(15, 15, 15, 0.6);
             color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        input[type="password"] {
+            padding-right: 50px;
         }
 
         input[type="text"]:focus,
         input[type="password"]:focus {
             border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15),
+                        0 0 20px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
         }
 
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #555;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 20px;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+
+        .toggle-password:hover {
+            color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #6366f1;
+        }
+
+        .remember-me label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        /* Animated button */
         .btn {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            padding: 16px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            background-size: 200% 200%;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 12px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
         .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            background-position: 100% 0;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
-        .error-message {
-            color: #ef4444;
-            font-size: 13px;
-            margin-top: 12px;
-            text-align: left;
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.loading {
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.8s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn.loading span {
+            opacity: 0;
+        }
+
+        /* Alert messages with slide animation */
+        .alert {
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-top: 16px;
             display: none;
-            padding: 10px 14px;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 6px;
-            border: 1px solid rgba(239, 68, 68, 0.2);
+            animation: slideInAlert 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(10px);
         }
 
-        .error-message.show {
-            display: block;
+        .alert.show {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-error {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-success {
+            color: #86efac;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        @keyframes slideInAlert {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-icon {
+            font-size: 18px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .footer-links {
-            margin-top: 25px;
+            margin-top: 28px;
             text-align: center;
-            font-size: 13px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
         }
 
         .footer-links a {
             color: #6366f1;
             text-decoration: none;
-            margin: 0 10px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .footer-links a::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            transition: width 0.3s;
         }
 
         .footer-links a:hover {
             color: #8b5cf6;
         }
 
+        .footer-links a:hover::before {
+            width: 100%;
+        }
+
+        /* Footer */
         .footer {
-            background: #1a1a1a;
-            border-top: 1px solid #2a2a2a;
-            padding: 15px 30px;
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
             text-align: center;
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
         }
 
         .footer a {
             color: #888;
             text-decoration: none;
+            transition: color 0.3s;
         }
 
         .footer a:hover {
             color: #6366f1;
         }
 
-        .info-banner {
-            background: rgba(99, 102, 241, 0.1);
-            color: #a5b4fc;
-            padding: 12px 20px;
-            text-align: center;
-            font-size: 13px;
-            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+                border-radius: 20px;
+            }
+
+            .login-header h1 {
+                font-size: 26px;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .header-nav {
+                gap: 15px;
+                font-size: 13px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .orb {
+                filter: blur(40px);
+            }
+        }
+
+        /* Input error state */
+        input.error {
+            border-color: #ef4444;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-logo">
-            <span>📚</span>
-            <span>StudyMore</span>
-        </div>
-        <div class="header-nav">
-            <a href="#">About</a>
-            <a href="#">Resources</a>
-            <a href="#">Help</a>
-        </div>
-    </div>
+    <div class="gradient-bg"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <canvas id="particles"></canvas>
 
-    <div class="info-banner">
-        Student Resource Portal • Sign in to access your course materials
-    </div>
-
-    <div class="main-content">
-        <div class="login-container">
-            <div class="login-header">
-                <h1>Welcome Back</h1>
-                <p>Sign in to continue to your resources</p>
+    <div class="content-wrapper">
+        <div class="header">
+            <div class="header-logo">
+                <span class="logo-icon">📚</span>
+                <span>StudyMore</span>
             </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Student ID or Email</label>
-                    <input type="text" id="username" name="username" required autocomplete="username">
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required autocomplete="current-password">
-                </div>
-                
-                <button type="submit" class="btn">Sign In</button>
-                
-                <div class="error-message" id="errorMessage">
-                    Incorrect credentials. Please try again.
-                </div>
-
-                <div class="footer-links">
-                    <a href="#">Forgot password?</a>
-                    <a href="#">Create account</a>
-                </div>
-            </form>
+            <div class="header-nav">
+                <a href="#">About</a>
+                <a href="#">Resources</a>
+                <a href="#">Help</a>
+            </div>
         </div>
-    </div>
 
-    <div class="footer">
-        © 2024 StudyMore Educational Resources • <a href="#">Privacy</a> • <a href="#">Terms</a>
+        <div class="info-banner">
+            Student Resource Portal • Sign in to access your course materials
+        </div>
+
+        <div class="main-content">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>Welcome Back</h1>
+                    <p>Sign in to continue to your resources</p>
+                </div>
+                
+                <form id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label for="username">Student ID or Email</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Enter your student ID"
+                            required 
+                            autocomplete="username"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                required 
+                                autocomplete="current-password"
+                            >
+                            <button 
+                                type="button" 
+                                class="toggle-password" 
+                                id="togglePassword"
+                            >
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <label for="rememberMe">Remember me for 30 days</label>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="submitBtn">
+                        <span>Sign In</span>
+                    </button>
+                    
+                    <div class="alert alert-error" id="errorMessage">
+                        <span class="alert-icon">⚠️</span>
+                        <span>Incorrect credentials. Please try again.</span>
+                    </div>
+
+                    <div class="alert alert-success" id="successMessage">
+                        <span class="alert-icon">✓</span>
+                        <span>Login successful! Redirecting...</span>
+                    </div>
+
+                    <div class="footer-links">
+                        <a href="#">Forgot password?</a>
+                        <a href="#">Create account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2024 StudyMore Educational Resources • <a href="#">Privacy</a> • <a href="#">Terms</a>
+        </div>
     </div>
 
     <script>
+        // Particle animation
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // Connect nearby particles
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.strokeStyle = `rgba(99, 102, 241, ${0.2 * (1 - distance / 120)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Form functionality
         const validCredentials = {
-            'admin': '67'
+            'admin': '67',
+            'demo': 'demo123'
         };
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const togglePassword = document.getElementById('togglePassword');
+        const rememberMe = document.getElementById('rememberMe');
+
+        // Password toggle
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            this.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+
+        // Load remembered username
+        window.addEventListener('DOMContentLoaded', function() {
+            const rememberedUser = localStorage.getItem('rememberedUser');
+            if (rememberedUser) {
+                usernameInput.value = rememberedUser;
+                rememberMe.checked = true;
+            }
+        });
+
+        // Clear errors on input
+        usernameInput.addEventListener('input', function() {
+            this.classList.remove('error');
+            errorMessage.classList.remove('show');
+        });
+
+        passwordInput.addEventListener('input', function() {
+            this.classList.remove('error');
+            errorMessage.classList.remove('show');
+        });
+
+        // Form submission
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!username || !password) {
+                errorMessage.querySelector('span:last-child').textContent = 'Please fill in all fields.';
+                errorMessage.classList.add('show');
+                usernameInput.classList.add('error');
+                passwordInput.classList.add('error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
             if (validCredentials[username] && validCredentials[username] === password) {
-                // Fetch mainhome.html and open it in about:blank
-                fetch('mainhome.html')
-                    .then(response => response.text())
-                    .then(html => {
-                        const newWindow = window.open('about:blank');
-                        newWindow.document.open();
-                        newWindow.document.write(html);
-                        newWindow.document.close();
-                    })
-                    .catch(error => {
-                        console.error('Error loading mainhome.html:', error);
-                        alert('Error loading page');
-                    });
+                if (rememberMe.checked) {
+                    localStorage.setItem('rememberedUser', username);
+                } else {
+                    localStorage.removeItem('rememberedUser');
+                }
                 
-                document.getElementById('loginForm').reset();
+                successMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    fetch('mainhome.html')
+                        .then(response => {
+                            if (!response.ok) throw new Error('Failed to load page');
+                            return response.text();
+                        })
+                        .then(html => {
+                            const newWindow = window.open('about:blank', '_blank');
+                            if (newWindow) {
+                                newWindow.document.open();
+                                newWindow.document.write(html);
+                                newWindow.document.close();
+                                loginForm.reset();
+                                submitBtn.disabled = false;
+                                submitBtn.classList.remove('loading');
+                                successMessage.classList.remove('show');
+                            } else {
+                                throw new Error('Popup blocked');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            errorMessage.querySelector('span:last-child').textContent = 'Error loading page. Please check if mainhome.html exists.';
+                            errorMessage.classList.add('show');
+                            successMessage.classList.remove('show');
+                            submitBtn.disabled = false;
+                            submitBtn.classList.remove('loading');
+                        });
+                }, 1200);
             } else {
+                errorMessage.querySelector('span:last-child').textContent = 'Incorrect credentials. Please try again.';
                 errorMessage.classList.add('show');
+                passwordInput.classList.add('error');
+                usernameInput.classList.add('error');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                
                 setTimeout(() => {
                     errorMessage.classList.remove('show');
                 }, 4000);
